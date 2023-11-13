@@ -49,16 +49,16 @@ import com.serenegiant.utils.FpsCounter;
  * XXX it is better that can set the aspect ratio as xml property
  */
 public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
-	implements TextureView.SurfaceTextureListener, CameraViewInterface {
+		implements TextureView.SurfaceTextureListener, CameraViewInterface {
 
 	private static final boolean DEBUG = true;	// TODO set false on release
 	private static final String TAG = "UVCCameraTextureView";
 
-    private boolean mHasSurface;
+	private boolean mHasSurface;
 	private RenderHandler mRenderHandler;
-    private final Object mCaptureSync = new Object();
-    private Bitmap mTempBitmap;
-    private boolean mReqesutCaptureStillImage;
+	private final Object mCaptureSync = new Object();
+	private Bitmap mTempBitmap;
+	private boolean mReqesutCaptureStillImage;
 	private Callback mCallback;
 	// Camera分辨率宽度
 
@@ -215,7 +215,7 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 	public void resetFps() {
 		mFpsCounter.reset();
 	}
-	
+
 	/** update frame rate of image processing */
 	public void updateFps() {
 		mFpsCounter.update();
@@ -243,7 +243,7 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 	 *
 	 */
 	private static final class RenderHandler extends Handler
-		implements SurfaceTexture.OnFrameAvailableListener  {
+			implements SurfaceTexture.OnFrameAvailableListener  {
 
 		private static final int MSG_REQUEST_RENDER = 1;
 		private static final int MSG_SET_ENCODER = 2;
@@ -256,8 +256,8 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 		private final FpsCounter mFpsCounter;
 
 		public static final RenderHandler createHandler(final FpsCounter counter,
-			final SurfaceTexture surface, final int width, final int height) {
-			
+														final SurfaceTexture surface, final int width, final int height) {
+
 			final RenderThread thread = new RenderThread(counter, surface, width, height);
 			thread.start();
 			return thread.getHandler();
@@ -325,38 +325,38 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 		public final void handleMessage(final Message msg) {
 			if (mThread == null) return;
 			switch (msg.what) {
-			case MSG_REQUEST_RENDER:
-				mThread.onDrawFrame();
-				break;
-			case MSG_SET_ENCODER:
-				mThread.setEncoder((MediaEncoder)msg.obj);
-				break;
-			case MSG_CREATE_SURFACE:
-				mThread.updatePreviewSurface();
-				break;
-			case MSG_RESIZE:
-				mThread.resize(msg.arg1, msg.arg2);
-				break;
-			case MSG_TERMINATE:
-				Looper.myLooper().quit();
-				mThread = null;
-				break;
-			default:
-				super.handleMessage(msg);
+				case MSG_REQUEST_RENDER:
+					mThread.onDrawFrame();
+					break;
+				case MSG_SET_ENCODER:
+					mThread.setEncoder((MediaEncoder)msg.obj);
+					break;
+				case MSG_CREATE_SURFACE:
+					mThread.updatePreviewSurface();
+					break;
+				case MSG_RESIZE:
+					mThread.resize(msg.arg1, msg.arg2);
+					break;
+				case MSG_TERMINATE:
+					Looper.myLooper().quit();
+					mThread = null;
+					break;
+				default:
+					super.handleMessage(msg);
 			}
 		}
 
 		private static final class RenderThread extends Thread {
-	    	private final Object mSync = new Object();
-	    	private final SurfaceTexture mSurface;
-	    	private RenderHandler mHandler;
-	    	private EGLBase mEgl;
-	    	/** IEglSurface instance related to this TextureView */
-	    	private EGLBase.IEglSurface mEglSurface;
-	    	private GLDrawer2D mDrawer;
-	    	private int mTexId = -1;
-	    	/** SurfaceTexture instance to receive video images */
-	    	private SurfaceTexture mPreviewSurface;
+			private final Object mSync = new Object();
+			private final SurfaceTexture mSurface;
+			private RenderHandler mHandler;
+			private EGLBase mEgl;
+			/** IEglSurface instance related to this TextureView */
+			private EGLBase.IEglSurface mEglSurface;
+			private GLDrawer2D mDrawer;
+			private int mTexId = -1;
+			/** SurfaceTexture instance to receive video images */
+			private SurfaceTexture mPreviewSurface;
 			private final float[] mStMatrix = new float[16];
 			private MediaEncoder mEncoder;
 			private int mViewWidth, mViewHeight;
@@ -366,25 +366,25 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 			 * constructor
 			 * @param surface: drawing surface came from TexureView
 			 */
-	    	public RenderThread(final FpsCounter fpsCounter, final SurfaceTexture surface, final int width, final int height) {
+			public RenderThread(final FpsCounter fpsCounter, final SurfaceTexture surface, final int width, final int height) {
 				mFpsCounter = fpsCounter;
-	    		mSurface = surface;
+				mSurface = surface;
 				mViewWidth = width;
 				mViewHeight = height;
-	    		setName("RenderThread");
+				setName("RenderThread");
 			}
 
 			public final RenderHandler getHandler() {
 				if (DEBUG) Log.v(TAG, "RenderThread#getHandler:");
-	            synchronized (mSync) {
-	                // create rendering thread
-	            	if (mHandler == null)
-	            	try {
-	            		mSync.wait();
-	            	} catch (final InterruptedException e) {
-	                }
-	            }
-	            return mHandler;
+				synchronized (mSync) {
+					// create rendering thread
+					if (mHandler == null)
+						try {
+							mSync.wait();
+						} catch (final InterruptedException e) {
+						}
+				}
+				return mHandler;
 			}
 
 			public void resize(final int width, final int height) {
@@ -400,27 +400,27 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 			}
 
 			public final void updatePreviewSurface() {
-	            if (DEBUG) Log.i(TAG, "RenderThread#updatePreviewSurface:");
-	            synchronized (mSync) {
-	            	if (mPreviewSurface != null) {
-	            		if (DEBUG) Log.d(TAG, "updatePreviewSurface:release mPreviewSurface");
-	            		mPreviewSurface.setOnFrameAvailableListener(null);
-	            		mPreviewSurface.release();
-	            		mPreviewSurface = null;
-	            	}
+				if (DEBUG) Log.i(TAG, "RenderThread#updatePreviewSurface:");
+				synchronized (mSync) {
+					if (mPreviewSurface != null) {
+						if (DEBUG) Log.d(TAG, "updatePreviewSurface:release mPreviewSurface");
+						mPreviewSurface.setOnFrameAvailableListener(null);
+						mPreviewSurface.release();
+						mPreviewSurface = null;
+					}
 					mEglSurface.makeCurrent();
-		            if (mTexId >= 0) {
+					if (mTexId >= 0) {
 						mDrawer.deleteTex(mTexId);
-		            }
-		    		// create texture and SurfaceTexture for input from camera
-		            mTexId = mDrawer.initTex();
-		            if (DEBUG) Log.v(TAG, "updatePreviewSurface:tex_id=" + mTexId);
-		            mPreviewSurface = new SurfaceTexture(mTexId);
+					}
+					// create texture and SurfaceTexture for input from camera
+					mTexId = mDrawer.initTex();
+					if (DEBUG) Log.v(TAG, "updatePreviewSurface:tex_id=" + mTexId);
+					mPreviewSurface = new SurfaceTexture(mTexId);
 					mPreviewSurface.setDefaultBufferSize(mViewWidth, mViewHeight);
-		            mPreviewSurface.setOnFrameAvailableListener(mHandler);
-		            // notify to caller thread that previewSurface is ready
+					mPreviewSurface.setOnFrameAvailableListener(mHandler);
+					// notify to caller thread that previewSurface is ready
 					mSync.notifyAll();
-	            }
+				}
 			}
 
 			public final void setEncoder(final MediaEncoder encoder) {
@@ -431,10 +431,10 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 				mEncoder = encoder;
 			}
 
-/*
- * Now you can get frame data as ByteBuffer(as YUV/RGB565/RGBX/NV21 pixel format) using IFrameCallback interface
- * with UVCCamera#setFrameCallback instead of using following code samples.
- */
+			/*
+			 * Now you can get frame data as ByteBuffer(as YUV/RGB565/RGBX/NV21 pixel format) using IFrameCallback interface
+			 * with UVCCamera#setFrameCallback instead of using following code samples.
+			 */
 /*			// for part1
  			private static final int BUF_NUM = 1;
 			private static final int BUF_STRIDE = 640 * 480;
@@ -543,56 +543,58 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 			@Override
 			public final void run() {
 				Log.d(TAG, getName() + " started");
-	            init();
-	            Looper.prepare();
-	            synchronized (mSync) {
-	            	mHandler = new RenderHandler(mFpsCounter, this);
-	                mSync.notify();
-	            }
+				init();
+				Looper.prepare();
+				synchronized (mSync) {
+					mHandler = new RenderHandler(mFpsCounter, this);
+					mSync.notify();
+				}
 
-	            Looper.loop();
+				Looper.loop();
 
-	            Log.d(TAG, getName() + " finishing");
-	            release();
-	            synchronized (mSync) {
-	                mHandler = null;
-	                mSync.notify();
-	            }
+				Log.d(TAG, getName() + " finishing");
+				release();
+				synchronized (mSync) {
+					mHandler = null;
+					mSync.notify();
+				}
 			}
 
 			private final void init() {
 				if (DEBUG) Log.v(TAG, "RenderThread#init:");
 				// create EGLContext for this thread
-	            mEgl = EGLBase.createFrom(null, false, false);
-	    		mEglSurface = mEgl.createFromSurface(mSurface);
-	    		mEglSurface.makeCurrent();
-	    		// create drawing object
-	    		mDrawer = new GLDrawer2D(true);
+				mEgl = EGLBase.createFrom(null, false, false);
+				mEglSurface = mEgl.createFromSurface(mSurface);
+				mEglSurface.makeCurrent();
+				// create drawing object
+				mDrawer = new GLDrawer2D(true);
 			}
 
-	    	private final void release() {
-				if (DEBUG) Log.v(TAG, "RenderThread#release:");
-	    		if (mDrawer != null) {
-	    			mDrawer.release();
-	    			mDrawer = null;
-	    		}
-	    		if (mPreviewSurface != null) {
-	    			mPreviewSurface.release();
-	    			mPreviewSurface = null;
-	    		}
-	            if (mTexId >= 0) {
-	            	GLHelper.deleteTex(mTexId);
-	            	mTexId = -1;
-	            }
-	    		if (mEglSurface != null) {
-	    			mEglSurface.release();
-	    			mEglSurface = null;
-	    		}
-	    		if (mEgl != null) {
-	    			mEgl.release();
-	    			mEgl = null;
-	    		}
-	    	}
+			private final void release() {
+				if (DEBUG) {
+					Log.v(TAG, "RenderThread#release:");
+				}
+				if (mDrawer != null) {
+					mDrawer.release();
+					mDrawer = null;
+				}
+				if (mPreviewSurface != null) {
+					mPreviewSurface.release();
+					mPreviewSurface = null;
+				}
+				if (mTexId >= 0) {
+					GLHelper.deleteTex(mTexId);
+					mTexId = -1;
+				}
+				if (mEglSurface != null) {
+					mEglSurface.release();
+					mEglSurface = null;
+				}
+				if (mEgl != null) {
+					mEgl.release();
+					mEgl = null;
+				}
+			}
 		}
 	}
 }
