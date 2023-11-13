@@ -46,7 +46,7 @@ import java.util.List;
  * Created by jiangdongguo on 2017/9/30.
  */
 
-public class USBCameraActivity extends AppCompatActivity implements CameraViewInterface.Callback, CameraDialog.CameraDialogParent  {
+public class USBCameraActivity extends AppCompatActivity implements CameraDialog.CameraDialogParent, CameraViewInterface.Callback {
     private static final String TAG = "Debug";
     public Toolbar mToolbar;
     public SeekBar mSeekBrightness;

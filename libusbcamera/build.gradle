@@ -44,9 +44,10 @@ android {
 
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-    implementation name: 'common-4.1.1', ext: 'aar'
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation(name:'common-4.1.1', ext:'aar')
+
 
     // App compat and UI things
     implementation 'androidx.appcompat:appcompat:1.6.1'

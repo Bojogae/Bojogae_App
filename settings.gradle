@@ -5,17 +5,9 @@ pluginManagement {
         google()
         mavenCentral()
         maven { url "https://jitpack.io" }
-        maven {
-            url 'http://maven.aliyun.com/nexus/content/groups/public/'
-            allowInsecureProtocol = true
-        }
-        maven {
-            url 'http://raw.github.com/saki4510t/libcommon/master/repository/'
-            allowInsecureProtocol = true
-        }
         gradlePluginPortal()
         flatDir {
-            dirs 'aars'
+            dirs './aars'
         }
     }
 
@@ -29,16 +21,8 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven { url "https://jitpack.io" }
-        maven {
-            url 'http://maven.aliyun.com/nexus/content/groups/public/'
-            allowInsecureProtocol = true
-        }
-        maven {
-            url 'http://raw.github.com/saki4510t/libcommon/master/repository/'
-            allowInsecureProtocol = true
-        }
         flatDir {
-            dirs 'aars'
+            dirs './aars'
         }
     }
 
