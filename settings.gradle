@@ -29,7 +29,7 @@ dependencyResolutionManagement {
 }
 
 
-rootProject.name = "Face-Detect-Distance-OpenCV-UVC"
+rootProject.name = "Bojogae_App"
 include ':app'
 include ':libusbcamera'
 include ':opencv'

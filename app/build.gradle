@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace 'com.wnzyan.face_detect_distance_opencv_uvc'
+    namespace 'com.bojogae.bojogae_app'
     compileSdk rootProject.ext.compileSdk
 
     defaultConfig {
-        applicationId "com.wnzyan.face_detect_distance_opencv_uvc"
+        applicationId "com.bojogae.bojogae_app"
         minSdk rootProject.ext.minSdk
         targetSdk rootProject.ext.targetSdk
         versionCode rootProject.ext.versionCode

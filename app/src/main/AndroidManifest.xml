@@ -35,7 +35,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="com.wnzyan.face_detect_distance_opencv_uvc.basic_code.view.SplashActivity"
+        <activity android:name=".basic_code.view.SplashActivity"
             android:screenOrientation="fullSensor"
             android:exported="true">
             <intent-filter>
