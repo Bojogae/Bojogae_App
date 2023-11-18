@@ -23,7 +23,6 @@ class PermissionRequestActivity : AppCompatActivity() {
 
     private lateinit var necessaryPermissions: MutableList<String>
     private val permissionHelper = PermissionHelper()
-    private var requiredPermissionDeviceCount = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +31,7 @@ class PermissionRequestActivity : AppCompatActivity() {
         permissionHelper.onRequestPermission = object: PermissionHelper.OnRequestPermissionResult {
             override fun onSuccessRequest() {
                 Toast.makeText(this@PermissionRequestActivity, "권한을 전부 요청 받았음", Toast.LENGTH_SHORT).show()
+                Log.d(AppControlUtil.DEBUG_TAG, "전부 허용 받았음")
             }
 
             override fun onFailureRequest(permissions: List<String>) {
@@ -56,8 +56,6 @@ class PermissionRequestActivity : AppCompatActivity() {
         } else if (permissionOptionValue == PermissionHelper.EXTERNAL) { // 외부 권한 요청
             val manager = getSystemService(Context.USB_SERVICE) as UsbManager   // 현재 연결된 USB 디바이스 리스트를 불러옴
             necessaryPermissions = permissionHelper.checkDevicePermission(manager)
-            requiredPermissionDeviceCount = necessaryPermissions.size   // 받아야 할 권한 개수 설정
-
             necessaryPermissions.forEach{ deviceName ->
                 val pendingIntent =
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE else PendingIntent.FLAG_UPDATE_CURRENT
@@ -69,10 +67,11 @@ class PermissionRequestActivity : AppCompatActivity() {
                 manager.requestPermission(manager.deviceList[deviceName], permissionIntent) // 디바이스 권한 요청
 
                 // Log.d(AppControlUtil.DEBUG_TAG, "디바이스 요청 " + deviceName)
+                val filter = IntentFilter(PermissionHelper.ACTION_USB_PERMISSION)
+                ContextCompat.registerReceiver(this, usbReceiver, filter, ContextCompat.RECEIVER_EXPORTED)
             }
 
-            val filter = IntentFilter(PermissionHelper.ACTION_USB_PERMISSION)
-            ContextCompat.registerReceiver(this, usbReceiver, filter, ContextCompat.RECEIVER_EXPORTED)
+
         }
     }
 

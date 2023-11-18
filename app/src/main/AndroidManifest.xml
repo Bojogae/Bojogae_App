@@ -1,14 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
     <!-- all version -->
-
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-
-    <!-- min sdk version is 33 -->
-
+    <uses-permission android:name="android.permission.RECORD_AUDIO" /> <!-- min sdk version is 33 -->
     <uses-permission
         android:name="android.permission.POST_NOTIFICATIONS"
         android:minSdkVersion="33" />
@@ -20,26 +15,18 @@
         android:minSdkVersion="33" />
     <uses-permission
         android:name="android.permission.READ_MEDIA_AUDIO"
-        android:minSdkVersion="33" />
-
-    <!-- max sdk version is 32 -->
-
+        android:minSdkVersion="33" /> <!-- max sdk version is 32 -->
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
-        android:maxSdkVersion="32" />
-
-    <!-- uses feature -->
-
+        android:maxSdkVersion="32" /> <!-- uses feature -->
     <uses-feature android:name="android.hardware.camera.any" />
     <uses-feature
         android:name="android.hardware.camera.raw"
         android:required="false" />
     <uses-feature android:name="android.hardware.usb.host" />
-
-    <!-- application manifest setting -->
 
     <application
         android:allowBackup="true"
@@ -51,6 +38,20 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FaceDetectDistanceOpenCVUVC"
         tools:targetApi="31">
+        <activity
+            android:name=".test.ObjectDistanceActivity"
+            android:exported="true"
+            android:label="@string/title_activity_object_distance"
+            android:theme="@style/Theme.FaceDetectDistanceOpenCVUVC" >
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+
+        </activity>
         <activity
             android:name=".test.PermissionRequestActivity"
             android:exported="false" />
@@ -76,7 +77,7 @@
         <activity
             android:name=".test.basic_code.view.USBCameraActivity"
             android:exported="true"
-            android:screenOrientation="fullSensor"></activity>
+            android:screenOrientation="fullSensor" />
     </application>
 
 </manifest>

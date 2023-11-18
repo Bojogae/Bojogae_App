@@ -121,6 +121,9 @@ class USBCameraActivity : AppCompatActivity(), CameraDialogParent, CameraViewInt
         mCameraHelper = UVCCameraHelper.getInstance()
         mCameraHelper?.setDefaultFrameFormat(UVCCameraHelper.FRAME_FORMAT_MJPEG)
         mCameraHelper?.initUSBMonitor(this, mUVCCameraView, listener)
+
+
+
         mCameraHelper?.setOnPreviewFrameListener(OnPreViewResultListener { nv21Yuv ->
             Log.d(
                 TAG,

@@ -15,6 +15,16 @@ class TestActivity : AppCompatActivity() {
         viewBinding = ActivityTestBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
 
+        // 텐서플로 라이트를 이용한 객체 인식
+        viewBinding.btnObjectDistance.setOnClickListener {
+            // 추가 예정
+        }
+
+        // 거리 측정 액티비티
+        viewBinding.btnObjectDistance.setOnClickListener {
+            val intent = Intent(this, ObjectDistanceActivity::class.java)
+            startActivity(intent)
+        }
 
         // 내부 권한 요청
         viewBinding.btnRequestPermission.setOnClickListener {

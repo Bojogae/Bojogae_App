@@ -538,6 +538,7 @@ public final class USBMonitor {
 
 		@Override
 		public void onReceive(final Context context, final Intent intent) {
+			Log.d("test", "usbmonitor onreciove");
 			if (destroyed) return;
 			final String action = intent.getAction();
 			if (ACTION_USB_PERMISSION.equals(action)) {
@@ -548,6 +549,7 @@ public final class USBMonitor {
 						if (device != null) {
 							// get permission, call onConnect
 							processConnect(device);
+							Log.d("test", "usbmonitor_" + device.getDeviceName());
 						}
 					} else {
 						// failed to get permission
