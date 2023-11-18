@@ -62,12 +62,13 @@ class SplashActivity : AppCompatActivity() {
         }
 
         val manager: UsbManager = getSystemService(Context.USB_SERVICE) as UsbManager
-        val permissionIntent = PendingIntent.getBroadcast(this, 0, Intent(SplashActivity.ACTION_USB_PERMISSION),
+        val permissionIntent = PendingIntent.getBroadcast(this, 0, Intent(ACTION_USB_PERMISSION),
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE else PendingIntent.FLAG_UPDATE_CURRENT)
-        val filter = IntentFilter(SplashActivity.ACTION_USB_PERMISSION)
+        val filter = IntentFilter(ACTION_USB_PERMISSION)
         registerReceiver(usbReceiver, filter)
         // 연결된 USB 디바이스 목록을 검색하고 권한이 없는 디바이스에 대해 권한 요청을 진행합니다.
         val deviceList = manager.deviceList
+
         deviceList.values.forEach { device ->
 
             Log.d(SplashActivity.TAG, device.deviceName)
@@ -75,8 +76,6 @@ class SplashActivity : AppCompatActivity() {
             if (!manager.hasPermission(device)) {
                 manager.requestPermission(device, permissionIntent)
             }
-
-
         }
     }
 
