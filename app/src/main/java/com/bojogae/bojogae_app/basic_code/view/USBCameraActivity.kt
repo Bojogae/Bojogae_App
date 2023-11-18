@@ -127,6 +127,8 @@ class USBCameraActivity : AppCompatActivity(), CameraDialogParent, CameraViewInt
                 "onPreviewResult: " + nv21Yuv.size
             )
         })
+
+        // 아무거나 추가
     }
 
     private fun initView() {
