@@ -1,4 +1,4 @@
-package com.bojogae.bojogae_app.basic_code.utils
+package com.bojogae.bojogae_app.test.basic_code.utils
 
 import android.content.Context
 import android.content.pm.PackageManager
@@ -6,7 +6,7 @@ import android.os.Build
 import android.os.Looper
 import android.os.Process
 import android.widget.Toast
-import com.bojogae.bojogae_app.basic_code.application.MyApplication
+import com.bojogae.bojogae_app.test.basic_code.application.MyApplication
 import com.jiangdg.usbcamera.utils.FileUtils
 import java.io.File
 import java.io.FileNotFoundException

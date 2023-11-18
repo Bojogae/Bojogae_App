@@ -1,7 +1,7 @@
-package com.bojogae.bojogae_app.basic_code.application
+package com.bojogae.bojogae_app.test.basic_code.application
 
 import android.app.Application
-import com.bojogae.bojogae_app.basic_code.utils.CrashHandler
+import com.bojogae.bojogae_app.test.basic_code.utils.CrashHandler
 
 /**application class
  *

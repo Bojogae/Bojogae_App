@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#ff000000"
-    tools:context=".basic_code.view.USBCameraActivity"
+    tools:context=".test.basic_code.view.USBCameraActivity"
     tools:ignore="MergeRootFrame">
 
     <androidx.appcompat.widget.Toolbar

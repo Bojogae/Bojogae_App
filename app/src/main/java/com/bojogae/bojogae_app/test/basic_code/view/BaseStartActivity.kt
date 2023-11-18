@@ -1,4 +1,4 @@
-package com.bojogae.bojogae_app.basic_code.view
+package com.bojogae.bojogae_app.test.basic_code.view
 
 import android.Manifest
 import android.app.PendingIntent
@@ -23,7 +23,7 @@ import com.bojogae.bojogae_app.R
  * permission checking
  * Created by jiangdongguo on 2019/6/27.
  */
-class PermissionRequestActivity : AppCompatActivity() {
+class BaseStartActivity : AppCompatActivity() {
     private val mMissPermissions: MutableList<String> = ArrayList()
     private var unPermissionDevice = mutableMapOf<String, UsbDevice>()
     private lateinit var manager: UsbManager
@@ -36,7 +36,7 @@ class PermissionRequestActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_permission_request)
+        setContentView(R.layout.activity_base_start)
 
         manager = getSystemService(Context.USB_SERVICE) as UsbManager
 
@@ -64,7 +64,7 @@ class PermissionRequestActivity : AppCompatActivity() {
 
         if (mMissPermissions.isNotEmpty()) {
             ActivityCompat.requestPermissions(
-                this@PermissionRequestActivity,
+                this@BaseStartActivity,
                 mMissPermissions.toTypedArray(),
                 REQUEST_CODE
             )
@@ -132,7 +132,7 @@ class PermissionRequestActivity : AppCompatActivity() {
             startMainActivity()
         } else {
             Toast.makeText(
-                this@PermissionRequestActivity,
+                this@BaseStartActivity,
                 "get permissions failed,exiting...",
                 Toast.LENGTH_SHORT
             ).show()
@@ -142,7 +142,7 @@ class PermissionRequestActivity : AppCompatActivity() {
 
     private fun startMainActivity() {
         Handler().postDelayed({
-            startActivity(Intent(this@PermissionRequestActivity, USBCameraActivity::class.java))
+            startActivity(Intent(this@BaseStartActivity, USBCameraActivity::class.java))
             finish()
         }, 3000)
     }

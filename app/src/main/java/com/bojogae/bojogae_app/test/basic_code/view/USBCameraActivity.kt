@@ -1,4 +1,4 @@
-package com.bojogae.bojogae_app.basic_code.view
+package com.bojogae.bojogae_app.test.basic_code.view
 
 import android.hardware.usb.UsbDevice
 import android.os.Bundle
@@ -22,7 +22,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.bojogae.bojogae_app.R
-import com.bojogae.bojogae_app.basic_code.application.MyApplication
+import com.bojogae.bojogae_app.test.basic_code.application.MyApplication
 import com.bojogae.bojogae_app.databinding.ActivityUsbcameraBinding
 import com.jiangdg.usbcamera.UVCCameraHelper
 import com.jiangdg.usbcamera.UVCCameraHelper.OnMyDevConnectListener
