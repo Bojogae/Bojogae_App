@@ -1,103 +1,98 @@
-package com.bojogae.bojogae_app.basic_code.view;
+package com.bojogae.bojogae_app.basic_code.view
 
-import android.Manifest;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Handler;
-import android.view.WindowManager;
-import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
-
-import com.bojogae.bojogae_app.R;
-
-import java.util.ArrayList;
-import java.util.List;
-
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
+import android.os.Bundle
+import android.os.Handler
+import android.view.WindowManager
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.bojogae.bojogae_app.R
 
 /**
  * permission checking
  * Created by jiangdongguo on 2019/6/27.
  */
-
-public class SplashActivity extends AppCompatActivity {
-    private static final String[] REQUIRED_PERMISSION_LIST = new String[]{
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.RECORD_AUDIO,
-            Manifest.permission.CAMERA,
-            Manifest.permission.READ_EXTERNAL_STORAGE
-    };
-    private static final int REQUEST_CODE = 1;
-    private List<String> mMissPermissions = new ArrayList<>();
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setContentView(R.layout.activity_splash);
-
-        if (isVersionM()) {
-            checkAndRequestPermissions();
+class SplashActivity : AppCompatActivity() {
+    private val mMissPermissions: MutableList<String> = ArrayList()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        setContentView(R.layout.activity_splash)
+        if (isVersionM) {
+            checkAndRequestPermissions()
         } else {
-            startMainActivity();
+            startMainActivity()
         }
     }
 
-    private boolean isVersionM() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
-    }
+    private val isVersionM: Boolean
+        private get() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
 
-    private void checkAndRequestPermissions() {
-        mMissPermissions.clear();
-        for (String permission : REQUIRED_PERMISSION_LIST) {
-            int result = ContextCompat.checkSelfPermission(this, permission);
+    private fun checkAndRequestPermissions() {
+        mMissPermissions.clear()
+        for (permission in REQUIRED_PERMISSION_LIST) {
+            val result = ContextCompat.checkSelfPermission(this, permission)
             if (result != PackageManager.PERMISSION_GRANTED) {
-                mMissPermissions.add(permission);
+                mMissPermissions.add(permission)
             }
         }
         // check permissions has granted
         if (mMissPermissions.isEmpty()) {
-            startMainActivity();
+            startMainActivity()
         } else {
-            ActivityCompat.requestPermissions(this,
-                    mMissPermissions.toArray(new String[mMissPermissions.size()]),
-                    REQUEST_CODE);
+            ActivityCompat.requestPermissions(
+                this,
+                mMissPermissions.toTypedArray(),
+                REQUEST_CODE
+            )
         }
     }
 
-    @Override
-    public void onRequestPermissionsResult(final int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_CODE) {
-            for (int i = grantResults.length - 1; i >= 0; i--) {
+            for (i in grantResults.indices.reversed()) {
                 if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-                    mMissPermissions.remove(permissions[i]);
+                    mMissPermissions.remove(permissions[i])
                 }
             }
         }
         // Get permissions success or not
         if (mMissPermissions.isEmpty()) {
-            startMainActivity();
+            startMainActivity()
         } else {
-            Toast.makeText(SplashActivity.this, "get permissions failed,exiting...",Toast.LENGTH_SHORT).show();
-            SplashActivity.this.finish();
+            Toast.makeText(
+                this@SplashActivity,
+                "get permissions failed,exiting...",
+                Toast.LENGTH_SHORT
+            ).show()
+            finish()
         }
     }
 
-    private void startMainActivity() {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                startActivity(new Intent(SplashActivity.this, USBCameraActivity.class));
-                SplashActivity.this.finish();
-            }
-        }, 3000);
+    private fun startMainActivity() {
+        Handler().postDelayed({
+            startActivity(Intent(this@SplashActivity, USBCameraActivity::class.java))
+            finish()
+        }, 3000)
+    }
+
+    companion object {
+        private val REQUIRED_PERMISSION_LIST = arrayOf(
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.RECORD_AUDIO,
+            Manifest.permission.CAMERA,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        )
+        private const val REQUEST_CODE = 1
     }
 }
-
