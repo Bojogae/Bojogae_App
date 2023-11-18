@@ -12,8 +12,10 @@ import android.hardware.usb.UsbManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -24,15 +26,16 @@ import com.bojogae.bojogae_app.R
  * Created by jiangdongguo on 2019/6/27.
  */
 class PermissionRequestActivity : AppCompatActivity() {
-    private val mMissPermissions: MutableList<String> = ArrayList()
-    private var unPermissionDevice = mutableMapOf<String, UsbDevice>()
+
+    private val missPermissions: MutableList<String> = mutableListOf()
+    private val unPermissionDevice: MutableMap<String, UsbDevice> = mutableMapOf()
     private lateinit var manager: UsbManager
 
-    private interface PermissionAllCheck {
+    private interface PermissionCheck {
         fun check()
     }
 
-    private lateinit var permissionAllCheck: PermissionAllCheck
+    private lateinit var permissionCheck: PermissionCheck
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,74 +43,82 @@ class PermissionRequestActivity : AppCompatActivity() {
 
         manager = getSystemService(Context.USB_SERVICE) as UsbManager
 
-
-        permissionAllCheck = object: PermissionAllCheck {
+        permissionCheck = object : PermissionCheck {
             override fun check() {
-                if (mMissPermissions.isEmpty() && unPermissionDevice.isEmpty()) {
+                if (missPermissions.isEmpty() && unPermissionDevice.isEmpty()) {
                     startMainActivity()
                 } else {
                     checkAndRequestPermissions()
                 }
             }
         }
+
         checkAndRequestPermissions()
     }
 
     private fun checkAndRequestPermissions() {
-        mMissPermissions.clear()
+        missPermissions.clear()
+
         for (permission in REQUIRED_PERMISSION_LIST) {
-            val result = ContextCompat.checkSelfPermission(this, permission)
-            if (result != PackageManager.PERMISSION_GRANTED) {
-                mMissPermissions.add(permission)
+            if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+                missPermissions.add(permission)
             }
         }
 
-        if (mMissPermissions.isNotEmpty()) {
-            ActivityCompat.requestPermissions(
-                this@PermissionRequestActivity,
-                mMissPermissions.toTypedArray(),
+        if (missPermissions.isNotEmpty()) {
+            requestPermissions(
+                missPermissions.toTypedArray(),
                 REQUEST_CODE
             )
+        } else {
+            checkUsbPermissions()
         }
+    }
 
-
-        val deviceList = manager.deviceList // 디바이스 리스트 설정
+    private fun checkUsbPermissions() {
+        val deviceList = manager.deviceList
         deviceList.values.forEach { device ->
-            Log.d(TAG, device.deviceName)
             if (!manager.hasPermission(device)) {
-                unPermissionDevice[device.deviceName] = device
+                unPermissionDevice[device.deviceName ?: ""] = device
             }
         }
 
-        unPermissionDevice.values.forEach{ device ->
-            val permissionIntent = PendingIntent.getBroadcast(this, 0, Intent(ACTION_USB_PERMISSION),
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE else PendingIntent.FLAG_UPDATE_CURRENT)
+        if (unPermissionDevice.isNotEmpty()) {
+            val permissionIntent = PendingIntent.getBroadcast(
+                this,
+                0,
+                Intent(ACTION_USB_PERMISSION),
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE else PendingIntent.FLAG_UPDATE_CURRENT
+            )
 
-            manager.requestPermission(device, permissionIntent)
+            for (device in unPermissionDevice.values) {
+                manager.requestPermission(device, permissionIntent)
+            }
 
             val filter = IntentFilter(ACTION_USB_PERMISSION)
-            ContextCompat.registerReceiver(this, usbReceiver, filter, ContextCompat.RECEIVER_EXPORTED)
+            ContextCompat.registerReceiver(this,usbReceiver, filter, ContextCompat.RECEIVER_EXPORTED)
+        } else {
+            permissionCheck.check()
         }
-
-        permissionAllCheck.check()
-
     }
 
-    private val usbReceiver = object : BroadcastReceiver() {
+    private val usbReceiver: BroadcastReceiver = object : BroadcastReceiver() {
 
         override fun onReceive(context: Context, intent: Intent) {
-            if (ACTION_USB_PERMISSION == intent.action) {
+            if (intent.action == ACTION_USB_PERMISSION) {
                 synchronized(this) {
-                    val device: UsbDevice? = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE)
+                    val device = intent.getParcelableExtra<UsbDevice>(UsbManager.EXTRA_DEVICE)
 
                     if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
-                        device?.apply {
-                            unPermissionDevice.remove(deviceName)
-
-
+                        device?.let {
+                            unPermissionDevice.remove(it.deviceName ?: "")
                         }
                     } else {
                         Log.d(TAG, "permission denied for device $device")
+                    }
+
+                    if (unPermissionDevice.isEmpty()) {
+                        permissionCheck.check()
                     }
                 }
             }
@@ -120,42 +131,48 @@ class PermissionRequestActivity : AppCompatActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
         if (requestCode == REQUEST_CODE) {
             for (i in grantResults.indices.reversed()) {
                 if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-                    mMissPermissions.remove(permissions[i])
+                    missPermissions.remove(permissions[i])
                 }
             }
         }
-        // Get permissions success or not
-        if (mMissPermissions.isEmpty()) {
-            startMainActivity()
+
+        if (missPermissions.isEmpty()) {
+            permissionCheck.check()
         } else {
-            Toast.makeText(
-                this@PermissionRequestActivity,
-                "get permissions failed,exiting...",
-                Toast.LENGTH_SHORT
-            ).show()
+
+            Toast.makeText(this, "Get permissions failed, exiting...", Toast.LENGTH_SHORT).show()
             finish()
         }
     }
 
+
+
     private fun startMainActivity() {
-        Handler().postDelayed({
-            startActivity(Intent(this@PermissionRequestActivity, USBCameraActivity::class.java))
+        Handler(Looper.getMainLooper()).postDelayed({
+            startActivity(Intent(this, USBCameraActivity::class.java))
             finish()
         }, 3000)
     }
+
 
     companion object {
         private const val TAG = "test"
         private const val ACTION_USB_PERMISSION = "com.android.example.USB_PERMISSION"
 
+        private val REQUEST_CODE_READ_EXTERNAL_STORAGE = 1
+        private val REQUEST_CODE_WRITE_EXTERNAL_STORAGE = 1
+        @RequiresApi(Build.VERSION_CODES.TIRAMISU)
         private val REQUIRED_PERMISSION_LIST = arrayOf(
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            //Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.RECORD_AUDIO,
             Manifest.permission.CAMERA,
-            Manifest.permission.READ_EXTERNAL_STORAGE
+            Manifest.permission.READ_MEDIA_IMAGES,
+            Manifest.permission.READ_MEDIA_AUDIO,
+            Manifest.permission.READ_MEDIA_VIDEO,
         )
         private const val REQUEST_CODE = 1
     }
