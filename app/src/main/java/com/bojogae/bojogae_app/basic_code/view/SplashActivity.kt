@@ -65,7 +65,7 @@ class SplashActivity : AppCompatActivity() {
         val permissionIntent = PendingIntent.getBroadcast(this, 0, Intent(ACTION_USB_PERMISSION),
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE else PendingIntent.FLAG_UPDATE_CURRENT)
         val filter = IntentFilter(ACTION_USB_PERMISSION)
-        registerReceiver(usbReceiver, filter)
+        ContextCompat.registerReceiver(this,usbReceiver, filter,ContextCompat.RECEIVER_EXPORTED)
         // 연결된 USB 디바이스 목록을 검색하고 권한이 없는 디바이스에 대해 권한 요청을 진행합니다.
         val deviceList = manager.deviceList
 
