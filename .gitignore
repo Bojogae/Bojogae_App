@@ -1,6 +1,8 @@
 *.iml
 .gradle
 /local.properties
+/gradle
+/.idea
 /.idea/caches
 /.idea/libraries
 /.idea/modules.xml
@@ -13,3 +15,11 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+
+libusbcamera/src/androidTest
+libusbcamera/src/test
+
+opencv/build
+opencv/.cxx
+
