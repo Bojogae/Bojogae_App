@@ -22,12 +22,10 @@ import androidx.navigation.Navigation
 private const val PERMISSIONS_REQUEST_CODE = 10
 private val PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA)
 
-
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
 
         val manager: UsbManager = getSystemService(Context.USB_SERVICE) as UsbManager
         val permissionIntent = PendingIntent.getBroadcast(this, 0, Intent(ACTION_USB_PERMISSION),
@@ -41,15 +39,12 @@ class MainActivity : AppCompatActivity() {
 
             Log.d(TAG, device.deviceName)
 
-
             if (!manager.hasPermission(device)) {
                 manager.requestPermission(device, permissionIntent)
             }
 
-
         }
     }
-
 
     private val usbReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -75,9 +70,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-
     }
-
 
     companion object {
 
@@ -89,6 +82,5 @@ class MainActivity : AppCompatActivity() {
             ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
         }
     }
-
 }
 
