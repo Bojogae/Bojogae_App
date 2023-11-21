@@ -4,4 +4,9 @@
     <string name="refresh">刷新</string>
     <string name="camera">Camera</string>
     <string name="no_device">未搜索到可用USB Camera设备</string>
+    <string name="permission_title">permission_title</string>
+    <string name="permission_ext_storage_request">permission_ext_storage_request</string>
+    <string name="permission_audio_recording_request">permission_audio_recording_request</string>
+    <string name="permission_network_request">permission_network_request</string>
+    <string name="permission_camera_request">permission_camera_request</string>
 </resources>

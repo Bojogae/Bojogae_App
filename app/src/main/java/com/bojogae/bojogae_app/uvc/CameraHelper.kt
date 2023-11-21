@@ -14,6 +14,7 @@ import com.serenegiant.usb.common.AbstractUVCCameraHandler.OnPreViewResultListen
 import com.serenegiant.usb.common.UVCCameraHandler
 import com.serenegiant.usb.widget.CameraViewInterface
 import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -58,7 +59,7 @@ class CameraHelper {
             override fun onConnect(device: UsbDevice, ctrlBlock: USBMonitor.UsbControlBlock, createNew: Boolean) { // called by connect to usb camera
                 this@CameraHelper.ctrlBlock = ctrlBlock
                 openCamera(ctrlBlock)
-                GlobalScope.launch {
+                GlobalScope.launch(Dispatchers.Main) {
                     try {
                         delay(500) // 대기 시간 500ms
                     } catch (e: InterruptedException) {

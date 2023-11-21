@@ -4,20 +4,43 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".test.ObjectDistanceActivity">
+    tools:context=".test.ObjectDistanceActivity"
+    android:id="@+id/constraint_layout">
 
-    <com.serenegiant.usb.widget.UVCCameraTextureView
+    <FrameLayout
+        android:id="@+id/frame_layout_left"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/camera_view_bottom"
-        android:id="@+id/camera_view_top"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"/>
+        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/frame_layout_right">
 
-    <com.serenegiant.usb.widget.UVCCameraTextureView
-        app:layout_constraintTop_toBottomOf="@id/camera_view_top"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:id="@+id/camera_view_bottom"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"/>
+        <com.serenegiant.usb.widget.UVCCameraTextureView
+            android:layout_gravity="center"
+            android:id="@+id/camera_view_left"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/frame_layout_right"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/frame_layout_left"
+        app:layout_constraintEnd_toEndOf="parent" >
+
+        <com.serenegiant.usb.widget.UVCCameraTextureView
+            android:layout_gravity="center"
+            android:id="@+id/camera_view_right"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </FrameLayout>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

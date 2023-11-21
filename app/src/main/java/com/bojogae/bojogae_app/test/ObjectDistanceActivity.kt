@@ -1,205 +1,177 @@
 package com.bojogae.bojogae_app.test
 
-import android.content.Context
 import android.hardware.usb.UsbDevice
-import android.hardware.usb.UsbManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.Surface
+import android.view.View.OnClickListener
+import android.widget.Toast
+import com.bojogae.bojogae_app.R
 import com.bojogae.bojogae_app.databinding.ActivityObjectDistanceBinding
-import com.bojogae.bojogae_app.utils.AppControlUtil
-import com.bojogae.bojogae_app.utils.toast
-import com.bojogae.bojogae_app.uvc.CameraHelper
-import com.jiangdg.usbcamera.utils.FileUtils
+import com.serenegiant.usb.CameraDialog
+import com.serenegiant.usb.CameraDialog.CameraDialogParent
+import com.serenegiant.usb.USBMonitor
+import com.serenegiant.usb.USBMonitor.OnDeviceConnectListener
 import com.serenegiant.usb.UVCCamera
+import com.serenegiant.usb.common.BaseActivity
+import com.serenegiant.usb.common.UVCCameraHandler
 import com.serenegiant.usb.widget.CameraViewInterface
 import com.serenegiant.usb.widget.UVCCameraTextureView
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
-class ObjectDistanceActivity : AppCompatActivity(){
+class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
+
 
     private lateinit var viewBinding: ActivityObjectDistanceBinding
-    private lateinit var cameraHelperTop: CameraHelper
-    private lateinit var cameraHelperBottom: CameraHelper
-
-    private lateinit var uvcCameraViewTop: UVCCameraTextureView
-    private lateinit var uvcCameraViewBottom: UVCCameraTextureView
-
-    private var isTopRequest = false
-    private var isBottomRequest = false
-
-    private var isTopPreview = false
-    private var isBottomPreview = false
 
 
+    // for accessing USB and USB camera
+    private lateinit var usbMonitor: USBMonitor
+
+    private lateinit var handlerL: UVCCameraHandler
+    private lateinit var handlerR: UVCCameraHandler
+
+    private lateinit var cameraViewLeft: CameraViewInterface
+    private lateinit var cameraViewRight: CameraViewInterface
+
+    private lateinit var previewLeft: Surface
+    private lateinit var previewRight: Surface
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         viewBinding = ActivityObjectDistanceBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
-        initializeUVCCameraHelper()
 
-        val usbManager = getSystemService(Context.USB_SERVICE) as UsbManager
-        Log.d(AppControlUtil.DEBUG_TAG, usbManager.deviceList.keys.toString())
+        cameraViewLeft = viewBinding.cameraViewLeft
+        cameraViewLeft.aspectRatio = (UVCCamera.DEFAULT_PREVIEW_WIDTH / UVCCamera.DEFAULT_PREVIEW_HEIGHT.toFloat()).toDouble()
+        (cameraViewLeft as UVCCameraTextureView).setOnClickListener(mOnClickListener)
+
+        handlerL = UVCCameraHandler.createHandler(this, cameraViewLeft, UVCCamera.DEFAULT_PREVIEW_WIDTH, UVCCamera.DEFAULT_PREVIEW_HEIGHT, BANDWIDTH_FACTORS[0])
+
+        cameraViewRight = viewBinding.cameraViewRight
+        cameraViewRight.aspectRatio = (UVCCamera.DEFAULT_PREVIEW_WIDTH / UVCCamera.DEFAULT_PREVIEW_HEIGHT.toFloat()).toDouble()
+        (cameraViewRight as UVCCameraTextureView).setOnClickListener(mOnClickListener)
+
+        handlerR = UVCCameraHandler.createHandler(this, cameraViewRight, UVCCamera.DEFAULT_PREVIEW_WIDTH, UVCCamera.DEFAULT_PREVIEW_HEIGHT, BANDWIDTH_FACTORS[1])
+
+        usbMonitor = USBMonitor(this, mOnDeviceConnectListener)
     }
-
-    @OptIn(DelicateCoroutinesApi::class)
-    private fun initializeUVCCameraHelper() {
-        // 카메라 탑 뷰 설정
-        uvcCameraViewTop = viewBinding.cameraViewTop
-        uvcCameraViewTop.setCallback(object : CameraViewInterface.Callback {
-            override fun onSurfaceCreated(view: CameraViewInterface?, surface: Surface?) {
-                if (!isTopPreview && cameraHelperTop.isCameraOpened()) {
-                    cameraHelperTop.startPreview(uvcCameraViewTop)
-                    isTopPreview = true
-                }
-            }
-
-            override fun onSurfaceChanged(view: CameraViewInterface?, surface: Surface?, width: Int, height: Int) {
-
-            }
-
-            override fun onSurfaceDestroy(view: CameraViewInterface?, surface: Surface?) {
-                if (!isTopPreview && cameraHelperTop.isCameraOpened()) {
-                    cameraHelperTop.stopPreview()
-                    isTopPreview = false
-                }
-            }
-        })
-
-        // 카메라 바텀 뷰 설정
-        uvcCameraViewBottom = viewBinding.cameraViewBottom
-        uvcCameraViewBottom.setCallback(object : CameraViewInterface.Callback {
-            override fun onSurfaceCreated(view: CameraViewInterface?, surface: Surface?) {
-                if (!isBottomPreview && cameraHelperBottom.isCameraOpened()) {
-                    cameraHelperBottom.startPreview(uvcCameraViewBottom)
-                    isBottomPreview = true
-                }
-            }
-
-            override fun onSurfaceChanged(view: CameraViewInterface?, surface: Surface?, width: Int, height: Int) {
-
-            }
-
-            override fun onSurfaceDestroy(view: CameraViewInterface?, surface: Surface?) {
-                if (!isBottomPreview && cameraHelperBottom.isCameraOpened()) {
-                    cameraHelperBottom.stopPreview()
-                    isBottomPreview = false
-                }
-            }
-        })
-
-        // 탑 카메라 헬퍼 설정
-        cameraHelperTop = CameraHelper()
-        cameraHelperTop.setDefaultFrameFormat(UVCCamera.FRAME_FORMAT_YUYV)
-        cameraHelperTop.initUSBMonitor(this@ObjectDistanceActivity, uvcCameraViewTop, object : CameraHelper.OnDevConnectListener {
-            override fun onAttachDev(device: UsbDevice) {
-                if (!isTopRequest) {
-                    isTopRequest = true
-                    cameraHelperTop.requestPermission(0)
-                }
-            }
-
-            override fun onDettachDev(device: UsbDevice) {
-                if (isTopRequest) {
-                    isTopRequest = false
-                    cameraHelperTop.closeCamera()
-                    this@ObjectDistanceActivity.toast("${device.deviceName} 종료")
-                }
-            }
-
-            override fun onConnectDev(device: UsbDevice, isConnected: Boolean) {
-                isTopPreview = if (!isConnected) {
-                    this@ObjectDistanceActivity.toast("연결 실패")
-                    false
-                } else {
-                    this@ObjectDistanceActivity.toast("연결 성공")
-                    GlobalScope.launch {
-                        delay(2500)
-                    }
-                    true
-                }
-            }
-
-            override fun onDisConnectDev(device: UsbDevice) {
-                this@ObjectDistanceActivity.toast("연결 종료")
-            }
-
-        })
-        cameraHelperTop.setOnPreviewFrameListener { yuv ->
-            Log.d(AppControlUtil.DEBUG_TAG, yuv.toString())
-            Log.d(AppControlUtil.DEBUG_TAG, "top")
-        }
-
-
-        // 바텀 카메라 헬퍼 설정
-        cameraHelperBottom = CameraHelper()
-        cameraHelperBottom.setDefaultFrameFormat(UVCCamera.FRAME_FORMAT_YUYV)
-        cameraHelperBottom.initUSBMonitor(this@ObjectDistanceActivity, uvcCameraViewBottom, object : CameraHelper.OnDevConnectListener {
-            override fun onAttachDev(device: UsbDevice) {
-                if (!isBottomRequest) {
-                    isBottomRequest = true
-                    cameraHelperTop.requestPermission(0)
-                }
-            }
-
-            override fun onDettachDev(device: UsbDevice) {
-                if (isBottomRequest) {
-                    isBottomRequest = false
-                    cameraHelperBottom.closeCamera()
-                    this@ObjectDistanceActivity.toast("${device.deviceName} 종료")
-                }
-            }
-
-            override fun onConnectDev(device: UsbDevice, isConnected: Boolean) {
-                isBottomPreview = if (!isConnected) {
-                    this@ObjectDistanceActivity.toast("연결 실패")
-                    false
-                } else {
-                    this@ObjectDistanceActivity.toast("연결 성공")
-                    GlobalScope.launch {
-                        delay(2500)
-                    }
-                    true
-                }
-            }
-
-            override fun onDisConnectDev(device: UsbDevice) {
-                this@ObjectDistanceActivity.toast("연결 종료")
-                Log.d(AppControlUtil.DEBUG_TAG, "${device.deviceName} 종료")
-            }
-
-        })
-        cameraHelperBottom.setOnPreviewFrameListener { yuv ->
-            Log.d(AppControlUtil.DEBUG_TAG, yuv.toString())
-            Log.d(AppControlUtil.DEBUG_TAG, "bottom")
-        }
-    }
-
 
     override fun onStart() {
         super.onStart()
-        cameraHelperTop.registerUSB()
-        cameraHelperBottom.registerUSB()
+        usbMonitor.register()
+        cameraViewRight.onResume()
+        cameraViewLeft.onResume()
     }
 
     override fun onStop() {
+        handlerR.close()
+        cameraViewRight.onPause()
+
+        handlerL.close()
+        cameraViewLeft.onPause()
+
+        usbMonitor.unregister()
+
         super.onStop()
-        cameraHelperTop.unRegisterUSB()
-        cameraHelperBottom.unRegisterUSB()
     }
 
     override fun onDestroy() {
+        usbMonitor.destroy()
         super.onDestroy()
-        FileUtils.releaseFile()
-        cameraHelperTop.release()
-        cameraHelperBottom.release()
     }
 
+    private val mOnClickListener = OnClickListener { view ->
+        when (view.id) {
+            R.id.camera_view_left -> if (!handlerL.isOpened) {
+                CameraDialog.showDialog(this@ObjectDistanceActivity)
+            } else {
+                handlerL.close()
+                setCameraButton()
+            }
+
+
+            R.id.camera_view_right -> if (!handlerR.isOpened) {
+                CameraDialog.showDialog(this@ObjectDistanceActivity)
+            } else {
+                handlerR.close()
+                setCameraButton()
+            }
+
+        }
+    }
+    private val mOnDeviceConnectListener: OnDeviceConnectListener = object : OnDeviceConnectListener {
+        override fun onAttach(device: UsbDevice) {
+            if (DEBUG) Log.v(TAG, "onAttach:$device")
+            Toast.makeText(this@ObjectDistanceActivity, "USB_DEVICE_ATTACHED", Toast.LENGTH_SHORT).show()
+        }
+
+        override fun onConnect(device: UsbDevice, ctrlBlock: USBMonitor.UsbControlBlock, createNew: Boolean) {
+            if (DEBUG) Log.v(TAG, "onConnect:$device")
+            if (!handlerL.isOpened) {
+                handlerL.open(ctrlBlock)
+                val st = cameraViewLeft.surfaceTexture
+                handlerL.startPreview(Surface(st))
+
+            } else if (!handlerR.isOpened) {
+                handlerR.open(ctrlBlock)
+                val st = cameraViewRight.surfaceTexture
+                handlerR.startPreview(Surface(st))
+
+            }
+        }
+
+        override fun onDisconnect(device: UsbDevice, ctrlBlock: USBMonitor.UsbControlBlock) {
+            if (DEBUG) Log.v(TAG, "onDisconnect:$device")
+            if (!handlerL.isEqual(device)) {
+                queueEvent({
+                    handlerL.close()
+                    previewLeft.release()
+                    setCameraButton()
+
+                }, 0)
+            } else if (!handlerR.isEqual(device)) {
+                queueEvent({
+                    handlerR.close()
+                    previewRight.release()
+                    setCameraButton()
+                }, 0)
+            }
+        }
+
+        override fun onDettach(device: UsbDevice) {
+            if (DEBUG) Log.v(TAG, "onDettach:$device")
+            Toast.makeText(this@ObjectDistanceActivity, "USB_DEVICE_DETACHED", Toast.LENGTH_SHORT).show()
+        }
+
+        override fun onCancel(device: UsbDevice) {
+            if (DEBUG) Log.v(TAG, "onCancel:")
+        }
+    }
+
+    /**
+     * to access from CameraDialog
+     * @return
+     */
+    override fun getUSBMonitor(): USBMonitor {
+        return usbMonitor
+    }
+
+    override fun onDialogResult(canceled: Boolean) {
+        if (canceled) {
+            runOnUiThread(Runnable { setCameraButton() }, 0)
+        }
+    }
+
+    private fun setCameraButton() {
+
+    }
+
+    companion object {
+        private const val DEBUG = false // FIXME set false when production
+        private const val TAG = "MainActivity"
+        private val BANDWIDTH_FACTORS = floatArrayOf(0.5f, 0.5f)
+    }
 
 
 }
