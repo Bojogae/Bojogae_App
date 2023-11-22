@@ -45,11 +45,11 @@ ext {
     usbLibJavaSourceCompatibility = JavaVersion.VERSION_17
     usbLibJavaTargetCompatibility = JavaVersion.VERSION_17
 
-    supportLibVersion = '25.3.1'  // variable that can be referenced to keep support libs consistent
-    commonLibVersion= '1.5.20'
+    supportLibVersion = '27.1.1'  // variable that can be referenced to keep support libs consistent
+    commonLibVersion= '2.5.1'
 
     // ndk version
-    ndkVersion = '21.4.7075529'
+    ndkVersion = '16.1.4479499'
 
     // compile version
     targetSdk = 34

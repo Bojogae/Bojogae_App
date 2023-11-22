@@ -8,6 +8,7 @@ import android.view.View.OnClickListener
 import android.widget.Toast
 import com.bojogae.bojogae_app.R
 import com.bojogae.bojogae_app.databinding.ActivityObjectDistanceBinding
+import com.bojogae.bojogae_app.utils.AppUtil
 import com.serenegiant.usb.CameraDialog
 import com.serenegiant.usb.CameraDialog.CameraDialogParent
 import com.serenegiant.usb.USBMonitor
@@ -17,6 +18,9 @@ import com.serenegiant.usb.common.BaseActivity
 import com.serenegiant.usb.common.UVCCameraHandler
 import com.serenegiant.usb.widget.CameraViewInterface
 import com.serenegiant.usb.widget.UVCCameraTextureView
+import org.opencv.android.OpenCVLoader
+import org.opencv.core.CvType
+import org.opencv.core.Mat
 
 class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
 
@@ -36,25 +40,60 @@ class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
     private lateinit var previewLeft: Surface
     private lateinit var previewRight: Surface
 
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
         viewBinding = ActivityObjectDistanceBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
+
+
+
+        if (!OpenCVLoader.initDebug()) {
+            Log.e(TAG, "OpenCV 초기화 실패!")
+        } else {
+            Log.d(TAG, "OpenCV 초기화 성공!!!!!")
+        }
+
 
         cameraViewLeft = viewBinding.cameraViewLeft
         cameraViewLeft.aspectRatio = (UVCCamera.DEFAULT_PREVIEW_WIDTH / UVCCamera.DEFAULT_PREVIEW_HEIGHT.toFloat()).toDouble()
         (cameraViewLeft as UVCCameraTextureView).setOnClickListener(mOnClickListener)
 
-        handlerL = UVCCameraHandler.createHandler(this, cameraViewLeft, UVCCamera.DEFAULT_PREVIEW_WIDTH, UVCCamera.DEFAULT_PREVIEW_HEIGHT, BANDWIDTH_FACTORS[0])
+        handlerL = UVCCameraHandler.createHandler(this, cameraViewLeft, 2,
+            UVCCamera.DEFAULT_PREVIEW_WIDTH, UVCCamera.DEFAULT_PREVIEW_HEIGHT, UVCCamera.PIXEL_FORMAT_YUV420SP)
+
+        // handlerL = UVCCameraHandler.createHandler(this, cameraViewLeft, UVCCamera.DEFAULT_PREVIEW_WIDTH, UVCCamera.DEFAULT_PREVIEW_HEIGHT, BANDWIDTH_FACTORS[0])
 
         cameraViewRight = viewBinding.cameraViewRight
         cameraViewRight.aspectRatio = (UVCCamera.DEFAULT_PREVIEW_WIDTH / UVCCamera.DEFAULT_PREVIEW_HEIGHT.toFloat()).toDouble()
         (cameraViewRight as UVCCameraTextureView).setOnClickListener(mOnClickListener)
 
-        handlerR = UVCCameraHandler.createHandler(this, cameraViewRight, UVCCamera.DEFAULT_PREVIEW_WIDTH, UVCCamera.DEFAULT_PREVIEW_HEIGHT, BANDWIDTH_FACTORS[1])
+        // handlerR = UVCCameraHandler.createHandler(this, cameraViewRight, UVCCamera.DEFAULT_PREVIEW_WIDTH, UVCCamera.DEFAULT_PREVIEW_HEIGHT, BANDWIDTH_FACTORS[1])
+        handlerR = UVCCameraHandler.createHandler(this, cameraViewRight, 2,
+            UVCCamera.DEFAULT_PREVIEW_WIDTH, UVCCamera.DEFAULT_PREVIEW_HEIGHT, UVCCamera.PIXEL_FORMAT_YUV420SP)
+
 
         usbMonitor = USBMonitor(this, mOnDeviceConnectListener)
+
+
+
+        handlerL.setOnPreViewResultListener {
+
+            val mat = Mat(UVCCamera.DEFAULT_PREVIEW_WIDTH, UVCCamera.DEFAULT_PREVIEW_HEIGHT, CvType.CV_8UC1)
+            mat.put(0, 0, it)
+
+            Log.d(AppUtil.DEBUG_TAG, "Mat type: ${mat.type()}")
+            Log.d(AppUtil.DEBUG_TAG, "Mat size: ${mat.size()}")
+            Log.d(AppUtil.DEBUG_TAG, "Mat channels: ${mat.channels()}")
+            Log.d(AppUtil.DEBUG_TAG, "Mat depth: ${mat.depth()}")
+
+
+        }
+
+
     }
 
     override fun onStart() {
@@ -62,6 +101,9 @@ class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
         usbMonitor.register()
         cameraViewRight.onResume()
         cameraViewLeft.onResume()
+
+
+
     }
 
     override fun onStop() {
@@ -171,6 +213,7 @@ class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
         private const val DEBUG = false // FIXME set false when production
         private const val TAG = "MainActivity"
         private val BANDWIDTH_FACTORS = floatArrayOf(0.5f, 0.5f)
+
     }
 
 

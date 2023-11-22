@@ -113,6 +113,9 @@ android {
                 targets "opencv_jni_shared"
             }
         }
+
+
+        multiDexEnabled true
     }
 
     compileOptions {
@@ -157,9 +160,11 @@ android {
         aidl = true
         buildConfig = true
     }
+    ndkVersion rootProject.ext.ndkVersion
 }
 
 
 
 dependencies {
+
 }
