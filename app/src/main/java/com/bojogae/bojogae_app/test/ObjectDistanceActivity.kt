@@ -21,6 +21,10 @@ import com.serenegiant.usb.widget.UVCCameraTextureView
 import org.opencv.android.OpenCVLoader
 import org.opencv.core.CvType
 import org.opencv.core.Mat
+import org.opencv.core.MatOfRect
+import org.opencv.objdetect.CascadeClassifier
+import java.io.File
+import java.io.FileOutputStream
 
 class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
 
@@ -40,7 +44,7 @@ class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
     private lateinit var previewLeft: Surface
     private lateinit var previewRight: Surface
 
-
+    private var lbpCascadeClassifier: CascadeClassifier? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,11 +55,7 @@ class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
 
 
 
-        if (!OpenCVLoader.initDebug()) {
-            Log.e(TAG, "OpenCV 초기화 실패!")
-        } else {
-            Log.d(TAG, "OpenCV 초기화 성공!!!!!")
-        }
+
 
 
         cameraViewLeft = viewBinding.cameraViewLeft
@@ -78,20 +78,58 @@ class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
 
         usbMonitor = USBMonitor(this, mOnDeviceConnectListener)
 
+        if (OpenCVLoader.initDebug()) {
+
+            val inputStream =  resources.openRawResource(org.opencv.R.raw.lbpcascade_frontalface)
+            val file = File(getDir(
+                "cascade", MODE_PRIVATE
+            ),
+                "lbpcascade_frontalface.xml")
+            val fileOutputStream = FileOutputStream(file)
+            // asd
+            val data = ByteArray(4096)
+            var readBytes: Int
+
+            while (inputStream.read(data).also { readBytes = it } != -1) {
+                fileOutputStream.write(data, 0, readBytes)
+            }
+
+            lbpCascadeClassifier = CascadeClassifier(file.absolutePath)
+
+            inputStream.close()
+            fileOutputStream.close()
+            file.delete()
 
 
-        handlerL.setOnPreViewResultListener {
+            handlerL.setOnPreViewResultListener {
 
-            val mat = Mat(UVCCamera.DEFAULT_PREVIEW_WIDTH, UVCCamera.DEFAULT_PREVIEW_HEIGHT, CvType.CV_8UC1)
-            mat.put(0, 0, it)
+                val yMat = Mat(UVCCamera.DEFAULT_PREVIEW_WIDTH, UVCCamera.DEFAULT_PREVIEW_HEIGHT, CvType.CV_8UC1)
+                yMat.put(0, 0, it)
 
-            Log.d(AppUtil.DEBUG_TAG, "Mat type: ${mat.type()}")
-            Log.d(AppUtil.DEBUG_TAG, "Mat size: ${mat.size()}")
-            Log.d(AppUtil.DEBUG_TAG, "Mat channels: ${mat.channels()}")
-            Log.d(AppUtil.DEBUG_TAG, "Mat depth: ${mat.depth()}")
+                // Log.d(AppUtil.DEBUG_TAG, "Mat type: ${yMat.type()}")
+                // Log.d(AppUtil.DEBUG_TAG, "Mat size: ${yMat.size()}")
+                // Log.d(AppUtil.DEBUG_TAG, "Mat channels: ${yMat.channels()}")
+                // Log.d(AppUtil.DEBUG_TAG, "Mat depth: ${yMat.depth()}")
+                val tyMat = yMat.t()
 
+                yMat.release()
+
+                val facesRects = MatOfRect()
+                lbpCascadeClassifier?.detectMultiScale(tyMat, facesRects, 1.1, 3)
+
+                Log.d(AppUtil.DEBUG_TAG, facesRects.toArray().size.toString())
+
+
+
+                tyMat.release()
+                facesRects.release()
+
+            }
 
         }
+
+
+
 
 
     }
