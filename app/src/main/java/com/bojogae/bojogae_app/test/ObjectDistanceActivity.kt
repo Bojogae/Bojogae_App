@@ -20,8 +20,14 @@ import com.serenegiant.usb.common.BaseActivity
 import com.serenegiant.usb.common.UVCCameraHandler
 import com.serenegiant.usb.widget.CameraViewInterface
 import com.serenegiant.usb.widget.UVCCameraTextureView
-import org.opencv.android.Utils
+import org.opencv.android.OpenCVLoader
+import org.opencv.core.CvType
 import org.opencv.core.Mat
+import org.opencv.core.MatOfRect
+import org.opencv.objdetect.CascadeClassifier
+import java.io.File
+import java.io.FileOutputStream
+import org.opencv.android.Utils
 import org.opencv.imgproc.Imgproc
 
 class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
@@ -41,6 +47,8 @@ class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
 
     private lateinit var previewLeft: Surface
     private lateinit var previewRight: Surface
+
+    private var lbpCascadeClassifier: CascadeClassifier? = null
 
     private var bitmap: Bitmap? = null
 
@@ -72,22 +80,89 @@ class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
         viewBinding = ActivityObjectDistanceBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
+
+
+
+
+
 
         cameraViewLeft = viewBinding.cameraViewLeft
         cameraViewLeft.aspectRatio = (UVCCamera.DEFAULT_PREVIEW_WIDTH / UVCCamera.DEFAULT_PREVIEW_HEIGHT.toFloat()).toDouble()
         (cameraViewLeft as UVCCameraTextureView).setOnClickListener(mOnClickListener)
 
-        handlerL = UVCCameraHandler.createHandler(this, cameraViewLeft, UVCCamera.DEFAULT_PREVIEW_WIDTH, UVCCamera.DEFAULT_PREVIEW_HEIGHT, BANDWIDTH_FACTORS[0])
+        handlerL = UVCCameraHandler.createHandler(this, cameraViewLeft, 2,
+            UVCCamera.DEFAULT_PREVIEW_WIDTH, UVCCamera.DEFAULT_PREVIEW_HEIGHT, UVCCamera.PIXEL_FORMAT_YUV420SP)
+
+        // handlerL = UVCCameraHandler.createHandler(this, cameraViewLeft, UVCCamera.DEFAULT_PREVIEW_WIDTH, UVCCamera.DEFAULT_PREVIEW_HEIGHT, BANDWIDTH_FACTORS[0])
 
         cameraViewRight = viewBinding.cameraViewRight
         cameraViewRight.aspectRatio = (UVCCamera.DEFAULT_PREVIEW_WIDTH / UVCCamera.DEFAULT_PREVIEW_HEIGHT.toFloat()).toDouble()
         (cameraViewRight as UVCCameraTextureView).setOnClickListener(mOnClickListener)
 
-        handlerR = UVCCameraHandler.createHandler(this, cameraViewRight, UVCCamera.DEFAULT_PREVIEW_WIDTH, UVCCamera.DEFAULT_PREVIEW_HEIGHT, BANDWIDTH_FACTORS[1])
+        // handlerR = UVCCameraHandler.createHandler(this, cameraViewRight, UVCCamera.DEFAULT_PREVIEW_WIDTH, UVCCamera.DEFAULT_PREVIEW_HEIGHT, BANDWIDTH_FACTORS[1])
+        handlerR = UVCCameraHandler.createHandler(this, cameraViewRight, 2,
+            UVCCamera.DEFAULT_PREVIEW_WIDTH, UVCCamera.DEFAULT_PREVIEW_HEIGHT, UVCCamera.PIXEL_FORMAT_YUV420SP)
+
 
         usbMonitor = USBMonitor(this, mOnDeviceConnectListener)
+
+        if (OpenCVLoader.initDebug()) {
+
+            val inputStream =  resources.openRawResource(org.opencv.R.raw.lbpcascade_frontalface)
+            val file = File(getDir(
+                "cascade", MODE_PRIVATE
+            ),
+                "lbpcascade_frontalface.xml")
+            val fileOutputStream = FileOutputStream(file)
+            // asd
+            val data = ByteArray(4096)
+            var readBytes: Int
+
+            while (inputStream.read(data).also { readBytes = it } != -1) {
+                fileOutputStream.write(data, 0, readBytes)
+            }
+
+            lbpCascadeClassifier = CascadeClassifier(file.absolutePath)
+
+            inputStream.close()
+            fileOutputStream.close()
+            file.delete()
+
+
+            handlerL.setOnPreViewResultListener {
+
+                val yMat = Mat(UVCCamera.DEFAULT_PREVIEW_WIDTH, UVCCamera.DEFAULT_PREVIEW_HEIGHT, CvType.CV_8UC1)
+                yMat.put(0, 0, it)
+
+                // Log.d(AppUtil.DEBUG_TAG, "Mat type: ${yMat.type()}")
+                // Log.d(AppUtil.DEBUG_TAG, "Mat size: ${yMat.size()}")
+                // Log.d(AppUtil.DEBUG_TAG, "Mat channels: ${yMat.channels()}")
+                // Log.d(AppUtil.DEBUG_TAG, "Mat depth: ${yMat.depth()}")
+                val tyMat = yMat.t()
+
+                yMat.release()
+
+                val facesRects = MatOfRect()
+                lbpCascadeClassifier?.detectMultiScale(tyMat, facesRects, 1.1, 3)
+
+                Log.d(AppUtil.DEBUG_TAG, facesRects.toArray().size.toString())
+
+
+
+                tyMat.release()
+                facesRects.release()
+
+            }
+
+        }
+
+
+
+
+
 
 
         Log.d(AppUtil.DEBUG_TAG, "oncreate")
@@ -102,6 +177,9 @@ class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
         usbMonitor.register()
         cameraViewRight.onResume()
         cameraViewLeft.onResume()
+
+
+
 
 
     }
@@ -216,6 +294,7 @@ class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
         private const val DEBUG = false // FIXME set false when production
         private const val TAG = "MainActivity"
         private val BANDWIDTH_FACTORS = floatArrayOf(0.5f, 0.5f)
+
     }
 
 
