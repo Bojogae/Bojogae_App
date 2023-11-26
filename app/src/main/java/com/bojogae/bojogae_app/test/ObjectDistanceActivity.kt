@@ -21,13 +21,14 @@ import com.serenegiant.usb.common.UVCCameraHandler
 import com.serenegiant.usb.widget.CameraViewInterface
 import com.serenegiant.usb.widget.UVCCameraTextureView
 import org.opencv.android.OpenCVLoader
-import org.opencv.core.CvType
 import org.opencv.core.Mat
 import org.opencv.core.MatOfRect
 import org.opencv.objdetect.CascadeClassifier
 import java.io.File
 import java.io.FileOutputStream
 import org.opencv.android.Utils
+import org.opencv.core.Scalar
+import org.opencv.core.Size
 import org.opencv.imgproc.Imgproc
 
 class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
@@ -58,17 +59,32 @@ class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
         srcBitmap.copyPixelsFromBuffer(frame)
 
         val rgbMat = Mat()
-        val grayMat = Mat()
+        val greyMat = Mat()
 
         bitmap = Bitmap.createBitmap(640, 480, Bitmap.Config.RGB_565)
 
         Utils.bitmapToMat(srcBitmap, rgbMat) //convert original bitmap to Mat, R G B.
 
-        Log.d(AppUtil.DEBUG_TAG, rgbMat.width().toString())
+        Imgproc.cvtColor(rgbMat, greyMat, Imgproc.COLOR_RGB2GRAY) //rgbMat to gray grayMat
 
-        Imgproc.cvtColor(rgbMat, grayMat, Imgproc.COLOR_RGB2GRAY) //rgbMat to gray grayMat
 
-        Utils.matToBitmap(grayMat, bitmap) //convert mat to bitmap
+
+//        val transposeRGB = rgbMat.t()
+//        val transposeGrey = greyMat.t()
+
+
+
+        val facesRects = MatOfRect()
+        lbpCascadeClassifier?.detectMultiScale(greyMat, facesRects, 1.1, 3)
+
+        for (rect in facesRects.toList()) {
+            val subMat = rgbMat.submat(rect)
+            //Imgproc.blur(subMat, subMat, Size(10.0, 10.0))
+            Imgproc.rectangle(rgbMat, rect, Scalar(0.0, 255.0, 0.0), 3)
+        }
+
+
+        Utils.matToBitmap(rgbMat, bitmap) //convert mat to bitmap
 
         runOnUiThread {
             viewBinding.cameraViewResultLeft.setImageBitmap(bitmap)
@@ -132,30 +148,6 @@ class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
             file.delete()
 
 
-            handlerL.setOnPreViewResultListener {
-
-                val yMat = Mat(UVCCamera.DEFAULT_PREVIEW_WIDTH, UVCCamera.DEFAULT_PREVIEW_HEIGHT, CvType.CV_8UC1)
-                yMat.put(0, 0, it)
-
-                // Log.d(AppUtil.DEBUG_TAG, "Mat type: ${yMat.type()}")
-                // Log.d(AppUtil.DEBUG_TAG, "Mat size: ${yMat.size()}")
-                // Log.d(AppUtil.DEBUG_TAG, "Mat channels: ${yMat.channels()}")
-                // Log.d(AppUtil.DEBUG_TAG, "Mat depth: ${yMat.depth()}")
-                val tyMat = yMat.t()
-
-                yMat.release()
-
-                val facesRects = MatOfRect()
-                lbpCascadeClassifier?.detectMultiScale(tyMat, facesRects, 1.1, 3)
-
-                Log.d(AppUtil.DEBUG_TAG, facesRects.toArray().size.toString())
-
-
-
-                tyMat.release()
-                facesRects.release()
-
-            }
 
         }
 
