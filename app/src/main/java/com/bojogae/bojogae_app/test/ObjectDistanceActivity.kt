@@ -8,11 +8,11 @@ import android.view.Surface
 import android.view.View.OnClickListener
 import android.widget.Toast
 import com.bojogae.bojogae_app.R
+import com.bojogae.bojogae_app.analyzer.DistanceAnalyzer
 import com.bojogae.bojogae_app.databinding.ActivityObjectDistanceBinding
 import com.bojogae.bojogae_app.utils.AppUtil
 import com.serenegiant.usb.CameraDialog
 import com.serenegiant.usb.CameraDialog.CameraDialogParent
-import com.serenegiant.usb.IFrameCallback
 import com.serenegiant.usb.USBMonitor
 import com.serenegiant.usb.USBMonitor.OnDeviceConnectListener
 import com.serenegiant.usb.UVCCamera
@@ -21,15 +21,6 @@ import com.serenegiant.usb.common.UVCCameraHandler
 import com.serenegiant.usb.widget.CameraViewInterface
 import com.serenegiant.usb.widget.UVCCameraTextureView
 import org.opencv.android.OpenCVLoader
-import org.opencv.core.Mat
-import org.opencv.core.MatOfRect
-import org.opencv.objdetect.CascadeClassifier
-import java.io.File
-import java.io.FileOutputStream
-import org.opencv.android.Utils
-import org.opencv.core.Scalar
-import org.opencv.core.Size
-import org.opencv.imgproc.Imgproc
 
 class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
 
@@ -49,61 +40,30 @@ class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
     private lateinit var previewLeft: Surface
     private lateinit var previewRight: Surface
 
-    private var lbpCascadeClassifier: CascadeClassifier? = null
-
-    private var bitmap: Bitmap? = null
-
-    private val iframeCallback = IFrameCallback { frame ->
-        frame.clear()
-        val srcBitmap = Bitmap.createBitmap(640, 480, Bitmap.Config.RGB_565)
-        srcBitmap.copyPixelsFromBuffer(frame)
-
-        val rgbMat = Mat()
-        val greyMat = Mat()
-
-        bitmap = Bitmap.createBitmap(640, 480, Bitmap.Config.RGB_565)
-
-        Utils.bitmapToMat(srcBitmap, rgbMat) //convert original bitmap to Mat, R G B.
-
-        Imgproc.cvtColor(rgbMat, greyMat, Imgproc.COLOR_RGB2GRAY) //rgbMat to gray grayMat
 
 
-
-//        val transposeRGB = rgbMat.t()
-//        val transposeGrey = greyMat.t()
-
-
-
-        val facesRects = MatOfRect()
-        lbpCascadeClassifier?.detectMultiScale(greyMat, facesRects, 1.1, 3)
-
-        for (rect in facesRects.toList()) {
-            val subMat = rgbMat.submat(rect)
-            //Imgproc.blur(subMat, subMat, Size(10.0, 10.0))
-            Imgproc.rectangle(rgbMat, rect, Scalar(0.0, 255.0, 0.0), 3)
-        }
-
-
-        Utils.matToBitmap(rgbMat, bitmap) //convert mat to bitmap
-
-        runOnUiThread {
-            viewBinding.cameraViewResultLeft.setImageBitmap(bitmap)
-        }
-    }
-
+    private lateinit var distanceAnalyzer: DistanceAnalyzer
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
         viewBinding = ActivityObjectDistanceBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
 
+        if (!OpenCVLoader.initDebug()) {
+            Log.d(AppUtil.DEBUG_TAG, "OpenCV Error")
+        }
 
-
-
-
+        distanceAnalyzer = DistanceAnalyzer(this)
+        distanceAnalyzer.resultListener = object : DistanceAnalyzer.OnResultListener {
+            override fun onResult(leftBitmap: Bitmap, rightBitmap: Bitmap) {
+                runOnUiThread {
+                    viewBinding.cameraViewResultLeft.setImageBitmap(leftBitmap)
+                    viewBinding.cameraViewResultRight.setImageBitmap(rightBitmap)
+                }
+            }
+        }
 
         cameraViewLeft = viewBinding.cameraViewLeft
         cameraViewLeft.aspectRatio = (UVCCamera.DEFAULT_PREVIEW_WIDTH / UVCCamera.DEFAULT_PREVIEW_HEIGHT.toFloat()).toDouble()
@@ -125,42 +85,9 @@ class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
 
         usbMonitor = USBMonitor(this, mOnDeviceConnectListener)
 
-        if (OpenCVLoader.initDebug()) {
-
-            val inputStream =  resources.openRawResource(org.opencv.R.raw.lbpcascade_frontalface)
-            val file = File(getDir(
-                "cascade", MODE_PRIVATE
-            ),
-                "lbpcascade_frontalface.xml")
-            val fileOutputStream = FileOutputStream(file)
-            // asd
-            val data = ByteArray(4096)
-            var readBytes: Int
-
-            while (inputStream.read(data).also { readBytes = it } != -1) {
-                fileOutputStream.write(data, 0, readBytes)
-            }
-
-            lbpCascadeClassifier = CascadeClassifier(file.absolutePath)
-
-            inputStream.close()
-            fileOutputStream.close()
-            file.delete()
-
-
-
-        }
-
-
-
-
-
-
-
         Log.d(AppUtil.DEBUG_TAG, "oncreate")
 
-
-
+        distanceAnalyzer.runAnalyze()
 
     }
 
@@ -169,10 +96,6 @@ class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
         usbMonitor.register()
         cameraViewRight.onResume()
         cameraViewLeft.onResume()
-
-
-
-
 
     }
 
@@ -190,6 +113,7 @@ class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
 
     override fun onDestroy() {
         usbMonitor.destroy()
+        distanceAnalyzer.flag = false
         super.onDestroy()
     }
 
@@ -223,7 +147,7 @@ class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
             if (!handlerL.isOpened) {
                 handlerL.open(ctrlBlock)
                 val st = cameraViewLeft.surfaceTexture
-                handlerL.setPreviewCallback(iframeCallback)
+                handlerL.setPreviewCallback(distanceAnalyzer.iFrameLeftCallback)
                 handlerL.startPreview(Surface(st))
 
 
@@ -231,6 +155,7 @@ class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
             } else if (!handlerR.isOpened) {
                 handlerR.open(ctrlBlock)
                 val st = cameraViewRight.surfaceTexture
+                handlerR.setPreviewCallback(distanceAnalyzer.iFrameRightCallback)
                 handlerR.startPreview(Surface(st))
 
             }
