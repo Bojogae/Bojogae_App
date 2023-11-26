@@ -1,5 +1,6 @@
 package com.bojogae.bojogae_app.test
 
+import android.graphics.Bitmap
 import android.hardware.usb.UsbDevice
 import android.os.Bundle
 import android.util.Log
@@ -8,8 +9,10 @@ import android.view.View.OnClickListener
 import android.widget.Toast
 import com.bojogae.bojogae_app.R
 import com.bojogae.bojogae_app.databinding.ActivityObjectDistanceBinding
+import com.bojogae.bojogae_app.utils.AppUtil
 import com.serenegiant.usb.CameraDialog
 import com.serenegiant.usb.CameraDialog.CameraDialogParent
+import com.serenegiant.usb.IFrameCallback
 import com.serenegiant.usb.USBMonitor
 import com.serenegiant.usb.USBMonitor.OnDeviceConnectListener
 import com.serenegiant.usb.UVCCamera
@@ -17,6 +20,9 @@ import com.serenegiant.usb.common.BaseActivity
 import com.serenegiant.usb.common.UVCCameraHandler
 import com.serenegiant.usb.widget.CameraViewInterface
 import com.serenegiant.usb.widget.UVCCameraTextureView
+import org.opencv.android.Utils
+import org.opencv.core.Mat
+import org.opencv.imgproc.Imgproc
 
 class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
 
@@ -35,6 +41,33 @@ class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
 
     private lateinit var previewLeft: Surface
     private lateinit var previewRight: Surface
+
+    private var bitmap: Bitmap? = null
+
+    private val iframeCallback = IFrameCallback { frame ->
+        frame.clear()
+        val srcBitmap = Bitmap.createBitmap(640, 480, Bitmap.Config.RGB_565)
+        srcBitmap.copyPixelsFromBuffer(frame)
+
+        val rgbMat = Mat()
+        val grayMat = Mat()
+
+        bitmap = Bitmap.createBitmap(640, 480, Bitmap.Config.RGB_565)
+
+        Utils.bitmapToMat(srcBitmap, rgbMat) //convert original bitmap to Mat, R G B.
+
+        Log.d(AppUtil.DEBUG_TAG, rgbMat.width().toString())
+
+        Imgproc.cvtColor(rgbMat, grayMat, Imgproc.COLOR_RGB2GRAY) //rgbMat to gray grayMat
+
+        Utils.matToBitmap(grayMat, bitmap) //convert mat to bitmap
+
+        runOnUiThread {
+            viewBinding.cameraViewResultLeft.setImageBitmap(bitmap)
+        }
+    }
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,6 +88,13 @@ class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
         handlerR = UVCCameraHandler.createHandler(this, cameraViewRight, UVCCamera.DEFAULT_PREVIEW_WIDTH, UVCCamera.DEFAULT_PREVIEW_HEIGHT, BANDWIDTH_FACTORS[1])
 
         usbMonitor = USBMonitor(this, mOnDeviceConnectListener)
+
+
+        Log.d(AppUtil.DEBUG_TAG, "oncreate")
+
+
+
+
     }
 
     override fun onStart() {
@@ -62,6 +102,8 @@ class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
         usbMonitor.register()
         cameraViewRight.onResume()
         cameraViewLeft.onResume()
+
+
     }
 
     override fun onStop() {
@@ -111,7 +153,10 @@ class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
             if (!handlerL.isOpened) {
                 handlerL.open(ctrlBlock)
                 val st = cameraViewLeft.surfaceTexture
+                handlerL.setPreviewCallback(iframeCallback)
                 handlerL.startPreview(Surface(st))
+
+
 
             } else if (!handlerR.isOpened) {
                 handlerR.open(ctrlBlock)

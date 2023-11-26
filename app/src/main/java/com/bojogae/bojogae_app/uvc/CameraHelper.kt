@@ -5,7 +5,7 @@ import android.content.Context
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import android.util.Log
-import com.bojogae.bojogae_app.utils.AppControlUtil
+import com.bojogae.bojogae_app.utils.AppUtil
 import com.github.jiangdongguo.R
 import com.serenegiant.usb.DeviceFilter
 import com.serenegiant.usb.USBMonitor
@@ -87,17 +87,17 @@ class CameraHelper {
         cameraView.aspectRatio = previewWidth / previewHeight.toDouble()
         cameraHandler = UVCCameraHandler.createHandler(activity, cameraView, 2,
             previewWidth, previewHeight, frameFormat)
-        Log.d(AppControlUtil.DEBUG_TAG, "createUVCCamera")
+        Log.d(AppUtil.DEBUG_TAG, "createUVCCamera")
 
     }
 
     private fun openCamera(ctrlBlock: USBMonitor.UsbControlBlock) {
-        Log.d(AppControlUtil.DEBUG_TAG, "openCamera")
+        Log.d(AppUtil.DEBUG_TAG, "openCamera")
         cameraHandler.open(ctrlBlock)
     }
 
     fun startPreview(cameraView: CameraViewInterface) {
-        Log.d(AppControlUtil.DEBUG_TAG, "startPreview")
+        Log.d(AppUtil.DEBUG_TAG, "startPreview")
         cameraHandler.startPreview(cameraView.surfaceTexture)
     }
 
@@ -114,19 +114,19 @@ class CameraHelper {
     }
 
     fun release() {
-        Log.d(AppControlUtil.DEBUG_TAG, "release")
+        Log.d(AppUtil.DEBUG_TAG, "release")
         cameraHandler.release()
         usbMonitor.destroy()
     }
 
     fun registerUSB() {
         usbMonitor.register()
-        Log.d(AppControlUtil.DEBUG_TAG, "registerUSB")
+        Log.d(AppUtil.DEBUG_TAG, "registerUSB")
     }
 
     fun unRegisterUSB() {
         usbMonitor.unregister()
-        Log.d(AppControlUtil.DEBUG_TAG, "unRegisterUSB")
+        Log.d(AppUtil.DEBUG_TAG, "unRegisterUSB")
     }
 
     fun isCameraOpened() : Boolean {

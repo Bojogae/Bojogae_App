@@ -19,6 +19,8 @@ import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 
+import androidx.annotation.NonNull;
+
 import com.serenegiant.usb.IFrameCallback;
 import com.serenegiant.usb.Size;
 import com.serenegiant.usb.USBMonitor;
@@ -107,6 +109,7 @@ public abstract class AbstractUVCCameraHandler extends Handler {
     private static final int MSG_MEDIA_UPDATE = 7;
     private static final int MSG_RELEASE = 9;
     private static final int MSG_CAMERA_FOUCS = 10;
+    private static final int MSG_PREVIEW_CALL_BACK = 11;
     // 音频线程
 //	private static final int MSG_AUDIO_START = 10;
 //	private static final int MSG_AUDIO_STOP = 11;
@@ -198,6 +201,11 @@ public abstract class AbstractUVCCameraHandler extends Handler {
         }
 
         sendMessage(obtainMessage(MSG_PREVIEW_START, surface));
+    }
+
+    protected void setPreviewCallback(IFrameCallback callback) {
+        this.checkReleased();
+        sendMessage(obtainMessage(MSG_PREVIEW_CALL_BACK, callback));
     }
 
     public void setOnPreViewResultListener(OnPreViewResultListener listener) {
@@ -350,7 +358,7 @@ public abstract class AbstractUVCCameraHandler extends Handler {
     }
 
     @Override
-    public void handleMessage(final Message msg) {
+    public void handleMessage(@NonNull final Message msg) {
         final CameraThread thread = mWeakThread.get();
         if (thread == null) return;
         switch (msg.what) {
@@ -387,6 +395,9 @@ public abstract class AbstractUVCCameraHandler extends Handler {
             case MSG_CAMERA_FOUCS:
                 thread.handleCameraFoucs();
                 break;
+            case MSG_PREVIEW_CALL_BACK:
+                thread.handleSetPreviewCallback((IFrameCallback)msg.obj);
+                break;
             default:
                 throw new RuntimeException("unsupported message:what=" + msg.what);
         }
@@ -399,7 +410,7 @@ public abstract class AbstractUVCCameraHandler extends Handler {
         private final WeakReference<Activity> mWeakParent;
         private final WeakReference<CameraViewInterface> mWeakCameraView;
         private final int mEncoderType;
-        private final Set<CameraCallback> mCallbacks = new CopyOnWriteArraySet<CameraCallback>();
+        private final Set<CameraCallback> mCallbacks = new CopyOnWriteArraySet();
         private int mWidth, mHeight, mPreviewMode;
         private float mBandwidthFactor;
         private boolean mIsPreviewing;
@@ -417,6 +428,9 @@ public abstract class AbstractUVCCameraHandler extends Handler {
         private Mp4MediaMuxer mMuxer;
         private boolean isPushing;
         private String mVideoPath;
+
+        private IFrameCallback mFrameCallback;
+
         private boolean isSupportOverlay;
 //		private boolean isAudioThreadStart;
 
@@ -539,6 +553,14 @@ public abstract class AbstractUVCCameraHandler extends Handler {
             }
         }
 
+        public void handleSetPreviewCallback(IFrameCallback frameCallback) {
+            this.mFrameCallback = frameCallback;
+            if (this.mUVCCamera != null) {
+                Log.v("zhf_debug", "handleSetPreviewCallback: frameCallback=" + frameCallback);
+                this.mUVCCamera.setFrameCallback(this.mFrameCallback, 2);
+            }
+        }
+
         public void handleStartPreview(final Object surface) {
             if (DEBUG) Log.v(TAG_THREAD, "handleStartPreview:");
             if ((mUVCCamera == null) || mIsPreviewing) return;
@@ -565,6 +587,8 @@ public abstract class AbstractUVCCameraHandler extends Handler {
             } else {
                 mUVCCamera.setPreviewTexture((SurfaceTexture) surface);
             }
+
+            mUVCCamera.setFrameCallback(mFrameCallback, 2);
             mUVCCamera.startPreview();
             mUVCCamera.updateCameraParams();
             synchronized (mSync) {

@@ -16,7 +16,7 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.bojogae.bojogae_app.R
-import com.bojogae.bojogae_app.utils.AppControlUtil
+import com.bojogae.bojogae_app.utils.AppUtil
 import com.bojogae.bojogae_app.utils.PermissionHelper
 
 class PermissionRequestActivity : AppCompatActivity() {
@@ -31,12 +31,12 @@ class PermissionRequestActivity : AppCompatActivity() {
         permissionHelper.onRequestPermission = object: PermissionHelper.OnRequestPermissionResult {
             override fun onSuccessRequest() {
                 Toast.makeText(this@PermissionRequestActivity, "권한을 전부 요청 받았음", Toast.LENGTH_SHORT).show()
-                Log.d(AppControlUtil.DEBUG_TAG, "전부 허용 받았음")
+                Log.d(AppUtil.DEBUG_TAG, "전부 허용 받았음")
             }
 
             override fun onFailureRequest(permissions: List<String>) {
-                Log.d(AppControlUtil.DEBUG_TAG, "허용 받지 못한 권한들")
-                Log.d(AppControlUtil.DEBUG_TAG, permissions.toString())
+                Log.d(AppUtil.DEBUG_TAG, "허용 받지 못한 권한들")
+                Log.d(AppUtil.DEBUG_TAG, permissions.toString())
                 Toast.makeText(this@PermissionRequestActivity, "권한을 허용 받지 못했습니다.", Toast.LENGTH_SHORT).show()
             }
         }
