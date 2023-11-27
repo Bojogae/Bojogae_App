@@ -6,8 +6,10 @@ import com.bojogae.bojogae_app.utils.AppUtil
 import com.serenegiant.usb.IFrameCallback
 import com.serenegiant.usb.common.BaseActivity
 import org.opencv.android.Utils
+import org.opencv.calib3d.StereoBM
 import org.opencv.core.Mat
 import org.opencv.core.MatOfRect
+import org.opencv.core.Rect
 import org.opencv.core.Scalar
 import org.opencv.imgproc.Imgproc
 import org.opencv.objdetect.CascadeClassifier
@@ -29,6 +31,12 @@ class DistanceAnalyzer(val context: Context) {
 
     var flag = true
 
+    // 캘리브레이션 파라미터
+    private val fx = 513.443409
+    private val fy = 513.443409
+    private val cx = 320.000000
+    private val cy = 240.000000
+    private val baseline = 8
 
     val iFrameLeftCallback = IFrameCallback {
         leftByteBuffer = it
@@ -117,17 +125,31 @@ class DistanceAnalyzer(val context: Context) {
         lbpCascadeClassifier?.detectMultiScale(greyRightMat, facesRightRects, 1.1, 3)
 
         val facesLeftRectList = facesLeftRects.toList()
+        val facesRightRectList = facesRightRects.toList()
+
+
+        // 스테레오 이미지에서 깊이 맵 생성 (이 부분은 캘리브레이션 데이터와 세부 설정에 따라 달라짐)
+        val depthMap = Mat()
+        val stereoMatcher = StereoBM.create()
+        stereoMatcher.compute(greyLeftMat, greyRightMat, depthMap)
+
+        // 얼굴 인식 및 거리 측정
         for (rect in facesLeftRectList) {
-            val subMat = rgbLeftMat.submat(rect)
+            // 거리 측정 함수 호출 (아래에 정의)
+            val distance = calculateDistance(depthMap, rect)
+            // 거리 정보를 사각형 위에 표시
+            Imgproc.putText(rgbLeftMat, "Distance: $distance", rect.tl(), Imgproc.FONT_HERSHEY_PLAIN, 4.0, Scalar(0.0, 0.0, 0.0), 3)
             Imgproc.rectangle(rgbLeftMat, rect, Scalar(0.0, 255.0, 0.0), 3)
+
         }
 
-        val facesRightRectList = facesRightRects.toList()
         for (rect in facesRightRectList) {
-            val subMat = rgbRightMat.submat(rect)
+            // 거리 측정 함수 호출 (아래에 정의)
+            val distance = calculateDistance(depthMap, rect)
+            // 거리 정보를 사각형 위에 표시
+            Imgproc.putText(rgbRightMat, "Distance: $distance", rect.tl(), Imgproc.FONT_HERSHEY_PLAIN, 4.0, Scalar(0.0, 0.0, 0.0), 3)
             Imgproc.rectangle(rgbRightMat, rect, Scalar(0.0, 255.0, 0.0), 3)
         }
-
 
 
         val leftBitmap = Bitmap.createBitmap(AppUtil.DEFAULT_WIDTH, AppUtil.DEFAULT_HEIGHT, Bitmap.Config.RGB_565)
@@ -139,6 +161,16 @@ class DistanceAnalyzer(val context: Context) {
         resultListener?.onResult(leftBitmap, rightBitmap)
 
 
+    }
+
+    private fun calculateDistance(depthMap: Mat, rect: Rect): Double {
+        // rect 중심에서 깊이 정보 추출
+        val depthValue = depthMap.get(rect.y + rect.height / 2, rect.x + rect.width / 2)[0]
+
+        // 실제 거리 계산
+        val realDistance = (baseline * fx) / depthValue
+
+        return realDistance
     }
 
 
