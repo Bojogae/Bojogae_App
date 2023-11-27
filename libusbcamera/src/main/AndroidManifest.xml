@@ -6,7 +6,13 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         tools:ignore="MissingApplicationIcon">
-
+    <receiver android:name="com.jiangdg.usbcamera.UsbReceiver"
+        android:exported="true">
+        <intent-filter>
+            <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+            <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
+        </intent-filter>
+    </receiver>
     </application>
 
 </manifest>

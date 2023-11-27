@@ -7,12 +7,12 @@ plugins {
 
 android {
     namespace 'com.bojogae.bojogae_app'
-    compileSdk rootProject.ext.compileSdk
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.bojogae.bojogae_app"
         minSdk rootProject.ext.minSdk
-        targetSdk rootProject.ext.targetSdk
+        targetSdk 34
         versionCode rootProject.ext.versionCode
         versionName rootProject.ext.versionNameString
 
