@@ -2,6 +2,7 @@ package com.bojogae.bojogae_app.analyzer
 
 import android.content.Context
 import android.graphics.Bitmap
+import com.bojogae.bojogae_app.utils.AppUtil
 import com.serenegiant.usb.IFrameCallback
 import com.serenegiant.usb.common.BaseActivity
 import org.opencv.android.Utils
@@ -18,8 +19,7 @@ import java.nio.ByteBuffer
 
 class DistanceAnalyzer(val context: Context) {
 
-    private val DEFAULT_WIDTH = 640
-    private val DEFAULT_HEIGHT = 480
+
 
     private var lbpCascadeClassifier: CascadeClassifier? = null
 
@@ -87,11 +87,11 @@ class DistanceAnalyzer(val context: Context) {
         leftBuffer.clear()
         rightBuffer.clear()
 
-        val srcLeftBitmap = Bitmap.createBitmap(DEFAULT_WIDTH, DEFAULT_HEIGHT, Bitmap.Config.RGB_565)
+        val srcLeftBitmap = Bitmap.createBitmap(AppUtil.DEFAULT_WIDTH, AppUtil.DEFAULT_HEIGHT, Bitmap.Config.RGB_565)
         srcLeftBitmap.copyPixelsFromBuffer(leftBuffer)
 
 
-        val srcRightBitmap = Bitmap.createBitmap(DEFAULT_WIDTH, DEFAULT_HEIGHT, Bitmap.Config.RGB_565)
+        val srcRightBitmap = Bitmap.createBitmap(AppUtil.DEFAULT_WIDTH, AppUtil.DEFAULT_HEIGHT, Bitmap.Config.RGB_565)
         srcRightBitmap.copyPixelsFromBuffer(rightBuffer)
 
         val rgbLeftMat = Mat()
@@ -99,6 +99,8 @@ class DistanceAnalyzer(val context: Context) {
 
         val greyLeftMat = Mat()
         val greyRightMat = Mat()
+
+
 
         Utils.bitmapToMat(srcLeftBitmap, rgbLeftMat) //convert original bitmap to Mat, R G B.
         Utils.bitmapToMat(srcRightBitmap, rgbRightMat)
@@ -128,10 +130,8 @@ class DistanceAnalyzer(val context: Context) {
 
 
 
-
-
-        val leftBitmap = Bitmap.createBitmap(DEFAULT_WIDTH, DEFAULT_HEIGHT, Bitmap.Config.RGB_565)
-        val rightBitmap = Bitmap.createBitmap(DEFAULT_WIDTH, DEFAULT_HEIGHT, Bitmap.Config.RGB_565)
+        val leftBitmap = Bitmap.createBitmap(AppUtil.DEFAULT_WIDTH, AppUtil.DEFAULT_HEIGHT, Bitmap.Config.RGB_565)
+        val rightBitmap = Bitmap.createBitmap(AppUtil.DEFAULT_WIDTH, AppUtil.DEFAULT_HEIGHT, Bitmap.Config.RGB_565)
 
         Utils.matToBitmap(rgbLeftMat, leftBitmap) //convert mat to bitmap
         Utils.matToBitmap(rgbRightMat, rightBitmap)
