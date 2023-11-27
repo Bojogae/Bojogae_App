@@ -25,6 +25,7 @@ package com.serenegiant.usb.common;
 
 import android.app.Activity;
 
+import com.serenegiant.usb.IFrameCallback;
 import com.serenegiant.usb.UVCCamera;
 import com.serenegiant.usb.widget.CameraViewInterface;
 
@@ -116,6 +117,10 @@ public class UVCCameraHandler extends AbstractUVCCameraHandler {
 
 	protected UVCCameraHandler(final CameraThread thread) {
 		super(thread);
+	}
+
+	public void setPreviewCallback(IFrameCallback callback) {
+		super.setPreviewCallback(callback);
 	}
 
 	@Override
