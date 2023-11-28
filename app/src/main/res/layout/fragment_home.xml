@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/BLUE"
+    tools:context=".HomeFragment">
+
+    <Button
+        android:id="@+id/walkStartBtn"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="보행 시작"
+        android:textStyle="bold"
+        android:textSize="80sp"
+        android:textColor="@color/BLACK"
+        android:background="@drawable/btn_shape_rectangle"
+        android:backgroundTint="@color/YELLOW" />
+
+    <LinearLayout
+        android:id="@+id/toolView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="-30dp"
+            android:text="현재 감지 수단"
+            android:textStyle="bold"
+            android:textSize="30sp"
+            android:background="@color/WHITE"/>
+
+        <LinearLayout
+            android:id="@+id/currentStateView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:src="@drawable/baseline_eye"
+                android:contentDescription="glasses"
+                android:background="@color/WHITE"
+                android:layout_marginEnd="25dp"/>
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:src="@drawable/baseline_car"
+                android:contentDescription="car"
+                android:background="@color/WHITE"
+                android:layout_marginStart="25dp"/>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/guideBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="가이드"
+            android:textStyle="bold"
+            android:textSize="30sp"
+            android:textColor="@color/BLACK"
+            android:backgroundTint="@color/WHITE"/>
+
+        <Button
+            android:id="@+id/settingBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="설정"
+            android:textStyle="bold"
+            android:textSize="30sp"
+            android:textColor="@color/BLACK"
+            android:backgroundTint="@color/WHITE"/>
+
+    </LinearLayout>
+
+
+
+</LinearLayout>
