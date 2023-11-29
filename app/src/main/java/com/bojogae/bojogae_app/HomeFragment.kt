@@ -21,6 +21,7 @@ class HomeFragment : Fragment() {
 
         val walkStartBtn = view.findViewById<Button>(R.id.walkStartBtn)
         val guideBtn = view. findViewById<Button>(R.id.guideBtn)
+        val settingsBtn = view.findViewById<Button>(R.id.settingBtn)
 
         walkStartBtn.setOnClickListener{
             findNavController().navigate(R.id.home_to_walk_start)
@@ -28,6 +29,10 @@ class HomeFragment : Fragment() {
 
         guideBtn.setOnClickListener{
             findNavController().navigate(R.id.home_to_guide)
+        }
+
+        settingsBtn.setOnClickListener {
+            findNavController().navigate(R.id.home_to_roading)
         }
 
         return view
