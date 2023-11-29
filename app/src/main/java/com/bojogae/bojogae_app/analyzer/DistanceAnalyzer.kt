@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
 import com.bojogae.bojogae_app.utils.AppUtil
+import com.bojogae.bojogae_app.utils.contents
 import com.serenegiant.usb.IFrameCallback
 import com.serenegiant.usb.common.BaseActivity
 import org.opencv.android.Utils
@@ -18,6 +19,7 @@ import org.opencv.imgproc.Imgproc
 import org.opencv.objdetect.CascadeClassifier
 import java.io.File
 import java.io.FileOutputStream
+import java.lang.Double.sum
 import java.nio.ByteBuffer
 import kotlin.math.pow
 
@@ -30,27 +32,13 @@ class DistanceAnalyzer(val context: Context) {
 
     private var leftByteBuffer: ByteBuffer? = null
     private var rightByteBuffer: ByteBuffer? = null
-    private val leftStereoMapX = Mat()
-    private val leftStereoMapY = Mat()
-    private val rightStereoMapX = Mat()
-    private val rightStereoMapY = Mat()
     private var stereo: StereoSGBM? = null
-    private var leftMatcher: StereoSGBM? = null
-    private var rightMatcher: StereoSGBM? = null
     private val windowSize = 3
     private val minDisp = 2
     private val numDisp = 130 - minDisp
-    private val kernel = Mat(3, 3, CvType.CV_8U)
-    private var dispC: Mat? = null
 
     var flag = true
 
-    // 캘리브레이션 파라미터
-    private val fx = 513.443409
-    private val fy = 513.443409
-    private val cx = 320.000000
-    private val cy = 240.000000
-    private val baseline = 8
 
     val iFrameLeftCallback = IFrameCallback {
         leftByteBuffer = it
@@ -127,18 +115,7 @@ class DistanceAnalyzer(val context: Context) {
 
         onCalibrateFinished.onSuccess()
 
-//        Thread {
-//            run {
-//                Log.d(AppUtil.DEBUG_TAG, "init calibrate thread start")
-//
-//
-//
-//
-//            }
-//        }.start()
     }
-
-
 
 
     private fun analyze(leftBuffer: ByteBuffer, rightBuffer: ByteBuffer) {
@@ -146,19 +123,17 @@ class DistanceAnalyzer(val context: Context) {
         leftBuffer.clear()
         rightBuffer.clear()
 
-        val srcLeftBitmap = Bitmap.createBitmap(AppUtil.DEFAULT_WIDTH, AppUtil.DEFAULT_HEIGHT, Bitmap.Config.ARGB_8888)
+        val srcLeftBitmap = Bitmap.createBitmap(AppUtil.DEFAULT_WIDTH, AppUtil.DEFAULT_HEIGHT, Bitmap.Config.RGB_565)
         srcLeftBitmap.copyPixelsFromBuffer(leftBuffer)
 
-        val srcRightBitmap = Bitmap.createBitmap(AppUtil.DEFAULT_WIDTH, AppUtil.DEFAULT_HEIGHT, Bitmap.Config.ARGB_8888)
+        val srcRightBitmap = Bitmap.createBitmap(AppUtil.DEFAULT_WIDTH, AppUtil.DEFAULT_HEIGHT, Bitmap.Config.RGB_565)
         srcRightBitmap.copyPixelsFromBuffer(rightBuffer)
 
         val rgbLeftMat = Mat()
         val rgbRightMat = Mat()
 
-        Utils.bitmapToMat(srcLeftBitmap, rgbLeftMat) //convert original bitmap to Mat, R G B.
+        Utils.bitmapToMat(srcLeftBitmap, rgbLeftMat)
         Utils.bitmapToMat(srcRightBitmap, rgbRightMat)
-
-
 
         Log.d(AppUtil.DEBUG_TAG, "imgproc remap success!!")
 
@@ -172,25 +147,29 @@ class DistanceAnalyzer(val context: Context) {
         val disp = Mat()
         stereo?.compute(greyLeftMat, greyRightMat, disp)
 
-
-        // 결과 정규화
-        val dispNorm = Mat()
-        Core.convertScaleAbs(disp, dispNorm, 1.0 / 16)
-        Core.subtract(dispNorm, Scalar(minDisp.toDouble()), dispNorm)
-        Core.divide(dispNorm, Scalar(numDisp.toDouble()), dispNorm)
+        Log.d(AppUtil.DEBUG_TAG, "disp sucess!!")
+        Log.d(AppUtil.DEBUG_TAG, disp.get(1, 1).toString())
+        Log.d(AppUtil.DEBUG_TAG, disp.toString())
 
 
 
-        Log.d(AppUtil.DEBUG_TAG, "stereo compute success and disp create!!")
+
+//        // 결과 정규화
+//        val dispNorm = Mat()
+//        Core.convertScaleAbs(disp, dispNorm, 1.0 / 16)
+//        Core.subtract(dispNorm, Scalar(minDisp.toDouble()), dispNorm)
+//        Core.divide(dispNorm, Scalar(numDisp.toDouble()), dispNorm)
 
 
-        Log.d(AppUtil.DEBUG_TAG, "dispc sucess!!")
-        Log.d(AppUtil.DEBUG_TAG, dispNorm.toString())
+//        Log.d(AppUtil.DEBUG_TAG, "dispNorm sucess!!")
+//        Log.d(AppUtil.DEBUG_TAG, dispNorm.toString())
 
         val facesLeftRects = MatOfRect()
         lbpCascadeClassifier?.detectMultiScale(greyLeftMat, facesLeftRects, 1.1, 3)
         val facesLeftRectList = facesLeftRects.toList()
 
+        val normalizedDisp = Mat()
+        Core.normalize(disp, normalizedDisp, 0.0, 255.0, Core.NORM_MINMAX, CvType.CV_8UC1)
 
         // 얼굴 인식 및 거리 측정
         for (rect in facesLeftRectList) {
@@ -199,25 +178,29 @@ class DistanceAnalyzer(val context: Context) {
             val faceCenterY = rect.y + rect.height / 2
 
             Imgproc.rectangle(rgbLeftMat, rect, Scalar(0.0, 255.0, 0.0), 3)
-            val distance = faceDistance(faceCenterX, faceCenterY, dispNorm)
+            val distance = faceDistance(faceCenterX, faceCenterY, normalizedDisp)
             val distanceToString = "%.2f".format(distance * 0.01)
 
             Imgproc.putText(rgbLeftMat, "$distanceToString m", Point(rect.x.toDouble(), (rect.y - 10).toDouble()),
                 Imgproc.FONT_HERSHEY_SIMPLEX, 0.9, Scalar(255.0, 0.0, 0.0, 255.0), 2)
-
         }
 
-        val disparityBitmap = Bitmap.createBitmap(AppUtil.DEFAULT_WIDTH, AppUtil.DEFAULT_HEIGHT, Bitmap.Config.ARGB_8888)
+
+
+
+        val dispBitmap = Bitmap.createBitmap(normalizedDisp.cols(), normalizedDisp.rows(), Bitmap.Config.ARGB_8888)
+        Utils.matToBitmap(normalizedDisp, dispBitmap)
+
+        // val disparityBitmap = Bitmap.createBitmap(AppUtil.DEFAULT_WIDTH, AppUtil.DEFAULT_HEIGHT, Bitmap.Config.ARGB_8888)
         val detectResultBitmap = Bitmap.createBitmap(AppUtil.DEFAULT_WIDTH, AppUtil.DEFAULT_HEIGHT, Bitmap.Config.ARGB_8888)
 
         Log.d(AppUtil.DEBUG_TAG, "image processing success!!")
-
         Log.d(AppUtil.DEBUG_TAG, rgbLeftMat.toString())
 
-        Utils.matToBitmap(dispNorm, disparityBitmap)
+        // Utils.matToBitmap(disp, disparityBitmap)
         Utils.matToBitmap(rgbLeftMat, detectResultBitmap)
 
-        resultListener?.onResult(disparityBitmap, detectResultBitmap)
+        resultListener?.onResult(dispBitmap, detectResultBitmap)
 
     }
 
@@ -225,7 +208,10 @@ class DistanceAnalyzer(val context: Context) {
         var average = 0.0
         for (u in -1..1) {
             for (v in -1..1) {
-                average += dispNorm.get(y + u, x + v)[0]
+                val value = dispNorm.get(y + u, x + v)
+                average += value.sum()
+                Log.d(AppUtil.DEBUG_TAG, value.toString())
+                Log.d(AppUtil.DEBUG_TAG, "$average average")
             }
         }
         average /= 9.0
