@@ -12,15 +12,16 @@
         android:id="@+id/walkStartBtn"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/toolView"
-        android:text="보행 시작"
-        android:textStyle="bold"
-        android:textSize="80sp"
-        android:textColor="@color/BLACK"
         android:background="@drawable/btn_shape_rectangle"
-        android:backgroundTint="@color/YELLOW"
-        android:elevation="2dp"/>
+        android:elevation="2dp"
+        android:text="보행 시작"
+        android:textColor="@color/BLACK"
+        android:textSize="80sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/toolView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/currentStateText"
