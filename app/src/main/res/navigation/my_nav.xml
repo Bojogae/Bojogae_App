@@ -23,6 +23,9 @@
         <action
             android:id="@+id/action_homeFragment_to_settingsFragment"
             app:destination="@id/settingsFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_roadingFragment2"
+            app:destination="@id/roadingFragment2" />
     </fragment>
     <fragment
         android:id="@+id/walkStartFragment"
@@ -53,6 +56,15 @@
         tools:layout="@layout/fragment_settings" >
         <action
             android:id="@+id/action_settingsFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/roadingFragment2"
+        android:name="com.bojogae.bojogae_app.RoadingFragment"
+        android:label="fragment_roading"
+        tools:layout="@layout/fragment_roading" >
+        <action
+            android:id="@+id/action_roadingFragment2_to_homeFragment"
             app:destination="@id/homeFragment" />
     </fragment>
 </navigation>

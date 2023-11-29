@@ -1,0 +1,2 @@
+ninja: Entering directory `C:\Users\User\StudioProjects\c\opencv\.cxx\Debug\1g1o70m4\x86'
+ninja: no work to do.

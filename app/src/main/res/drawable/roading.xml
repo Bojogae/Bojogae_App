@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <!-- res/drawable/rounded_background.xml -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+android:shape="oval">
+<!-- 배경 색상 -->
+<solid android:color="#144047" />
+
+<size
+    android:width="200dp"
+    android:height="200dp" />
+
+</shape>
