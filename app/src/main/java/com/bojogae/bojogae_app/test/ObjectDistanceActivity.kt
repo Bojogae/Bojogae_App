@@ -24,6 +24,7 @@ import com.serenegiant.usb.widget.UVCCameraTextureView
 import org.opencv.android.OpenCVLoader
 import org.opencv.android.Utils
 import org.opencv.calib3d.Calib3d
+import org.opencv.calib3d.StereoSGBM
 import org.opencv.core.CvType
 import org.opencv.core.Mat
 import org.opencv.core.MatOfPoint2f
@@ -31,6 +32,7 @@ import org.opencv.core.Rect
 import org.opencv.core.Size
 import org.opencv.core.TermCriteria
 import org.opencv.imgproc.Imgproc
+import kotlin.math.pow
 
 class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
 
@@ -54,159 +56,9 @@ class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
 
     private lateinit var distanceAnalyzer: DistanceAnalyzer
 
-    init {
-        val kernel = Mat(3, 3, CvType.CV_8U)
 
 
-        val criteria = TermCriteria(TermCriteria.EPS + TermCriteria.MAX_ITER, 30, 0.001)
-        val criteriaStereo = TermCriteria(TermCriteria.EPS + TermCriteria.MAX_ITER, 30, 0.001)
 
-        val objp = Mat(9 * 6, 1, CvType.CV_32FC3)
-        var idx = 0
-        for (i in 0 until 6) {
-            for (j in 0 until 9) {
-                objp.put(idx++, 0, j.toDouble(), i.toDouble(), 0.0)
-            }
-        }
-
-
-        val objpoints = mutableListOf<Mat>()
-        val imgpointsR = mutableListOf<Mat>()
-        val imgpointsL = mutableListOf<Mat>()
-
-        val assetManager = assets
-
-        var rightChessMat: Mat? = null
-        var leftChessMat: Mat? = null
-
-        for (i in 0 .. 70) {
-            val t = i.toString()
-
-            val chessImaRightIS = assetManager.open("calibration_image/chessboard_r${i}.png")
-            val chessImaLeftIS = assetManager.open("calibration_image/chessboard_l${i}.png")
-
-            val rightBitmap = BitmapFactory.decodeStream(chessImaRightIS)
-            chessImaRightIS.close()
-
-            rightChessMat = Mat()
-            Utils.bitmapToMat(rightBitmap, rightChessMat)
-
-            val leftBitmap = BitmapFactory.decodeStream(chessImaLeftIS)
-            chessImaLeftIS.close()
-
-            leftChessMat = Mat()
-            Utils.bitmapToMat(leftBitmap, leftChessMat)
-
-            // 체스판 코너 찾기 (오른쪽 이미지)
-            val cornersR = MatOfPoint2f()
-            val retR = Calib3d.findChessboardCorners(rightChessMat, Size(9.0, 6.0), cornersR)
-
-            // 체스판 코너 찾기 (왼쪽 이미지)
-            val cornersL = MatOfPoint2f()
-            val retL = Calib3d.findChessboardCorners(leftChessMat, Size(9.0, 6.0), cornersL)
-
-            if (retR && retL) {
-                // 코너를 성공적으로 찾은 경우, 결과를 저장
-                objpoints.add(objp.clone())
-                imgpointsR.add(cornersR)
-                imgpointsL.add(cornersL)
-
-                // 체스판 코너를 더 정확하게 정렬
-                Imgproc.cornerSubPix(rightChessMat, cornersR, Size(11.0, 11.0), Size(-1.0, -1.0), criteria)
-                Imgproc.cornerSubPix(leftChessMat, cornersL, Size(11.0, 11.0), Size(-1.0, -1.0), criteria)
-            }
-
-        }
-
-        val mtxR = Mat()
-        val distR = Mat()
-        val rvecsR = mutableListOf<Mat>()
-        val tvecsR = mutableListOf<Mat>()
-        val retR = Calib3d.calibrateCamera(objpoints, imgpointsR, rightChessMat?.size(), mtxR, distR, rvecsR, tvecsR)
-
-        val mtxL = Mat()
-        val distL = Mat()
-        val rvecsL = mutableListOf<Mat>()
-        val tvecsL = mutableListOf<Mat>()
-        val retL = Calib3d.calibrateCamera(objpoints, imgpointsL, rightChessMat?.size(), mtxL, distL, rvecsL, tvecsL)
-
-
-        val hR = rightChessMat?.rows() ?: 0
-        val wR = rightChessMat?.cols() ?: 0
-
-        val hL = leftChessMat?.rows() ?: 0
-        val wL = leftChessMat?.cols() ?: 0
-
-        val omtxR = Size()
-        val roiR = Rect()
-
-        Calib3d.getOptimalNewCameraMatrix(mtxR, distR, Size(wR.toDouble(), hR.toDouble()), 1.0, omtxR, roiR)
-
-        val omtxL = Size()
-        val roiL = Rect()
-
-        Calib3d.getOptimalNewCameraMatrix(mtxL, distL, Size(wL.toDouble(), hL.toDouble()), 1.0, omtxL, roiL)
-
-        // 스테레오 카메라 보정 수행
-        val R = Mat()  // 회전 매트릭스
-        val T = Mat()  // 이동 벡터
-        val E = Mat()  // 에센셜 매트릭스
-        val F = Mat()  // 펀더멘탈 매트릭스
-        val RL = Mat() // 왼쪽 카메라의 회전 매트릭스
-        val RR = Mat() // 오른쪽 카메라의 회전 매트릭스
-        val PL = Mat() // 왼쪽 카메라의 보정된 프로젝션 매트릭스
-        val PR = Mat() // 오른쪽 카메라의 보정된 프로젝션 매트릭스
-        val Q = Mat()  // Q 매트릭스
-
-        val imageSize = Size(wR.toDouble(), hR.toDouble())
-
-        // 객체 점과 이미지 점을 MatOfPoint2f 리스트로 변환
-        val objpointsMatOfPoint2f = objpoints.map { objp ->
-            val mop2f = MatOfPoint2f()
-            mop2f.create(objp.rows(), 1, CvType.CV_32FC2)
-            for (i in 0 until objp.rows()) {
-                mop2f.put(i, 0, objp.get(i, 0)[0], objp.get(i, 0)[1])
-            }
-            mop2f
-        }
-
-        val imgpointsRMatOfPoint2f = imgpointsR.map { it as MatOfPoint2f }
-        val imgpointsLMatOfPoint2f = imgpointsL.map { it as MatOfPoint2f }
-
-
-        // 스테레오 카메라 보정
-        val retS = Calib3d.stereoCalibrate(
-            objpointsMatOfPoint2f, imgpointsLMatOfPoint2f, imgpointsRMatOfPoint2f,
-            mtxL, distL,
-            mtxR, distR,
-            imageSize,
-            R, T, E, F,
-            Calib3d.CALIB_FIX_INTRINSIC,
-            criteriaStereo
-        )
-
-        val rectifyScale = 0.0
-        Calib3d.stereoRectify(
-            mtxL, distL, mtxR, distR, imageSize,
-            R, T, RL, RR, PL, PR, Q,
-            Calib3d.CALIB_ZERO_DISPARITY, rectifyScale, imageSize
-        )
-
-        val chessImageSize = Size(wR.toDouble(), hR.toDouble())
-
-        //
-
-
-    }
-
-    private fun face_disp(x: Int, y: Int) {
-        val average = 0
-        for (u in -1 .. 2) {
-            for (v in -1 .. 2) {
-
-            }
-        }
-    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -217,7 +69,11 @@ class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
 
         if (!OpenCVLoader.initDebug()) {
             Log.d(AppUtil.DEBUG_TAG, "OpenCV Error")
+        } else {
+            Log.d(AppUtil.DEBUG_TAG, "OpenCV Success")
+
         }
+
 
         distanceAnalyzer = DistanceAnalyzer(this)
         distanceAnalyzer.resultListener = object : DistanceAnalyzer.OnResultListener {
@@ -251,7 +107,7 @@ class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
 
         Log.d(AppUtil.DEBUG_TAG, "oncreate")
 
-        distanceAnalyzer.runAnalyze()
+        //
 
     }
 

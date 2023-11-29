@@ -24,15 +24,7 @@ class MultikTestActivity : AppCompatActivity() {
             }
         }
 
-        // Mat 객체 내용을 로그로 출력
-        val buffer = FloatArray(3) // CV_32FC3 타입의 Mat은 3개의 float 값을 가짐
-        val stringBuilder = StringBuilder()
-        for (i in 0 until objp.rows()) {
-            objp.get(i, 0, buffer)
-            stringBuilder.append("[${buffer[0]}, ${buffer[1]}, ${buffer[2]}]\n")
-        }
 
-        Log.d(AppUtil.DEBUG_TAG, "objp contents:\n$stringBuilder")
 
     }
 }
