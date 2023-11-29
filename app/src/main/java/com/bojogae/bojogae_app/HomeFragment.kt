@@ -8,6 +8,9 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.navigation.fragment.findNavController
 
+/**
+ * 앱의 메인 화면
+ */
 class HomeFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -17,9 +20,14 @@ class HomeFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_home, container, false)
 
         val walkStartBtn = view.findViewById<Button>(R.id.walkStartBtn)
+        val guideBtn = view. findViewById<Button>(R.id.guideBtn)
 
         walkStartBtn.setOnClickListener{
             findNavController().navigate(R.id.home_to_walk_start)
+        }
+
+        guideBtn.setOnClickListener{
+            findNavController().navigate(R.id.home_to_guide)
         }
 
         return view

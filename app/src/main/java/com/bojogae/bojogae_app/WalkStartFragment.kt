@@ -8,6 +8,12 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.navigation.fragment.findNavController
 
+/**
+ * 사용자가 "보행 시작" 버튼을 눌렀을 때 카메라로 객체 탐지를 시작하는 화면
+ * 필요 기능
+ * - 음성 안내
+ * - 종료 버튼
+ */
 class WalkStartFragment : Fragment() {
 
     override fun onCreateView(
