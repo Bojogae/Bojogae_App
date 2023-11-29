@@ -1,19 +1,19 @@
 @echo off
-"C:\\Users\\HAEDAL\\AppData\\Local\\Android\\Sdk\\cmake\\3.22.1\\bin\\cmake.exe" ^
-  "-HC:\\Users\\HAEDAL\\StudioProjects\\Bojogae_App\\opencv\\libcxx_helper" ^
+"C:\\Users\\User\\AppData\\Local\\Android\\Sdk\\cmake\\3.22.1\\bin\\cmake.exe" ^
+  "-HC:\\Users\\User\\StudioProjects\\c\\opencv\\libcxx_helper" ^
   "-DCMAKE_SYSTEM_NAME=Android" ^
   "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON" ^
   "-DCMAKE_SYSTEM_VERSION=26" ^
   "-DANDROID_PLATFORM=android-26" ^
   "-DANDROID_ABI=x86_64" ^
   "-DCMAKE_ANDROID_ARCH_ABI=x86_64" ^
-  "-DANDROID_NDK=C:\\Users\\HAEDAL\\AppData\\Local\\Android\\Sdk\\ndk\\25.1.8937393" ^
-  "-DCMAKE_ANDROID_NDK=C:\\Users\\HAEDAL\\AppData\\Local\\Android\\Sdk\\ndk\\25.1.8937393" ^
-  "-DCMAKE_TOOLCHAIN_FILE=C:\\Users\\HAEDAL\\AppData\\Local\\Android\\Sdk\\ndk\\25.1.8937393\\build\\cmake\\android.toolchain.cmake" ^
-  "-DCMAKE_MAKE_PROGRAM=C:\\Users\\HAEDAL\\AppData\\Local\\Android\\Sdk\\cmake\\3.22.1\\bin\\ninja.exe" ^
-  "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=C:\\Users\\HAEDAL\\StudioProjects\\Bojogae_App\\opencv\\build\\intermediates\\cxx\\Debug\\1g1o70m4\\obj\\x86_64" ^
-  "-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=C:\\Users\\HAEDAL\\StudioProjects\\Bojogae_App\\opencv\\build\\intermediates\\cxx\\Debug\\1g1o70m4\\obj\\x86_64" ^
+  "-DANDROID_NDK=C:\\Users\\User\\AppData\\Local\\Android\\Sdk\\ndk\\25.1.8937393" ^
+  "-DCMAKE_ANDROID_NDK=C:\\Users\\User\\AppData\\Local\\Android\\Sdk\\ndk\\25.1.8937393" ^
+  "-DCMAKE_TOOLCHAIN_FILE=C:\\Users\\User\\AppData\\Local\\Android\\Sdk\\ndk\\25.1.8937393\\build\\cmake\\android.toolchain.cmake" ^
+  "-DCMAKE_MAKE_PROGRAM=C:\\Users\\User\\AppData\\Local\\Android\\Sdk\\cmake\\3.22.1\\bin\\ninja.exe" ^
+  "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=C:\\Users\\User\\StudioProjects\\c\\opencv\\build\\intermediates\\cxx\\Debug\\1g1o70m4\\obj\\x86_64" ^
+  "-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=C:\\Users\\User\\StudioProjects\\c\\opencv\\build\\intermediates\\cxx\\Debug\\1g1o70m4\\obj\\x86_64" ^
   "-DCMAKE_BUILD_TYPE=Debug" ^
-  "-BC:\\Users\\HAEDAL\\StudioProjects\\Bojogae_App\\opencv\\.cxx\\Debug\\1g1o70m4\\x86_64" ^
+  "-BC:\\Users\\User\\StudioProjects\\c\\opencv\\.cxx\\Debug\\1g1o70m4\\x86_64" ^
   -GNinja ^
   "-DANDROID_STL=c++_shared"
