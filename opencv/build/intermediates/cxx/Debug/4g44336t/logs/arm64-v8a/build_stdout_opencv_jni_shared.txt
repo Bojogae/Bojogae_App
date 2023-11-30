@@ -1,2 +1,0 @@
-ninja: Entering directory `C:\Users\ymail\AndroidStudioProjects\face-detect-analyzer-android\opencv\.cxx\Debug\4g44336t\arm64-v8a'
-ninja: no work to do.

@@ -53,12 +53,7 @@ class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
     private lateinit var previewRight: Surface
 
 
-
     private lateinit var distanceAnalyzer: DistanceAnalyzer
-
-
-
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -106,8 +101,6 @@ class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
         usbMonitor = USBMonitor(this, mOnDeviceConnectListener)
 
         Log.d(AppUtil.DEBUG_TAG, "oncreate")
-
-        //
 
     }
 
