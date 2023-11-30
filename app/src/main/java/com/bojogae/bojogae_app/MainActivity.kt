@@ -8,8 +8,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.hardware.Sensor
-import android.hardware.SensorEvent
-import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
@@ -22,15 +20,9 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import java.util.Objects
-import kotlin.math.sqrt
-
 
 private const val PERMISSIONS_REQUEST_CODE = 10
 private val PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA)
-
-private const val SHAKE_THRESHOLD_GRAVITY = 2.7f
-private const val SHAKE_SLOP_TIME_MS = 500
-private const val SHAKE_COUNT_RESET_TIME_MS = 3000
 
 class MainActivity : AppCompatActivity() {
 
@@ -38,8 +30,6 @@ class MainActivity : AppCompatActivity() {
     private var acceleration = 0f // 가속도 크기
     private var currentAcceleration = 0f // 현재 가속도
     private var lastAcceleration = 0f // 최대 가속도
-    private var mShakeTimestamp: Long = 0 // 시간 기록
-    private var mShakeCount = 0 // 흔든 횟수
 
     @RequiresApi(34)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,46 +55,18 @@ class MainActivity : AppCompatActivity() {
 
         // 핸드쉐이킹 센서(가속도 센서)
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
-
-        Objects.requireNonNull(sensorManager)!!
-            .registerListener(sensorListener, sensorManager!!
-            .getDefaultSensor(Sensor.TYPE_ACCELEROMETER),SensorManager.SENSOR_DELAY_NORMAL)
-
-        acceleration = 20f
-        currentAcceleration = SensorManager.GRAVITY_EARTH
-        lastAcceleration = SensorManager.GRAVITY_EARTH
-    }
-
-    // 핸드쉐이킹 기능 구현
-    private val sensorListener: SensorEventListener = object : SensorEventListener {
-        override fun onSensorChanged(event: SensorEvent) {
-            val x = event.values[0]
-            val y = event.values[1]
-            val z = event.values[2]
-            lastAcceleration = currentAcceleration
-
-            currentAcceleration = sqrt((x * x + y * y + z * z).toDouble()).toFloat()
-            val delta: Float = currentAcceleration - lastAcceleration
-            acceleration = acceleration * 0.9f + delta
-
-
-            if (acceleration > 15) {
-
-                val now:Long = System.currentTimeMillis()
-
-                if (mShakeTimestamp + SHAKE_SLOP_TIME_MS > now) {
-                    return
-                }
-                if (mShakeTimestamp + SHAKE_COUNT_RESET_TIME_MS < now) {
-                    mShakeCount = 0
-                }
-                mShakeTimestamp = now;
-                mShakeCount++;
-
+        val listener: SensorListener = SensorListener()
+        listener.setOnShakeListener(object: SensorListener.OnShakeListener {
+            override fun onShake(count: Int) {
                 navigateToNewFragment()
             }
-        }
-        override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {}
+        })
+
+        Objects.requireNonNull(sensorManager)!!
+            .registerListener(listener, sensorManager!!
+            .getDefaultSensor(Sensor.TYPE_ACCELEROMETER),SensorManager.SENSOR_DELAY_NORMAL)
+
+
     }
 
     private fun navigateToNewFragment() {
@@ -117,7 +79,6 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
-
 
     private val usbReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
