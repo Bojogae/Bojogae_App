@@ -7,30 +7,44 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
-import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.lifecycleScope
-import androidx.navigation.Navigation
+import androidx.navigation.NavController
+import androidx.navigation.findNavController
+import java.util.Objects
+import kotlin.math.sqrt
 
 
 private const val PERMISSIONS_REQUEST_CODE = 10
 private val PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA)
 
+private const val SHAKE_THRESHOLD_GRAVITY = 2.7f
+private const val SHAKE_SLOP_TIME_MS = 500
+private const val SHAKE_COUNT_RESET_TIME_MS = 3000
 
 class MainActivity : AppCompatActivity() {
+
+    private var sensorManager: SensorManager? = null // 가속도 센서 매니저
+    private var acceleration = 0f // 가속도 크기
+    private var currentAcceleration = 0f // 현재 가속도
+    private var lastAcceleration = 0f // 최대 가속도
+    private var mShakeTimestamp: Long = 0 // 시간 기록
+    private var mShakeCount = 0 // 흔든 횟수
+
     @RequiresApi(34)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
 
         val manager: UsbManager = getSystemService(Context.USB_SERVICE) as UsbManager
         val permissionIntent = PendingIntent.getBroadcast(this, 0, Intent(ACTION_USB_PERMISSION),
@@ -44,13 +58,64 @@ class MainActivity : AppCompatActivity() {
 
             Log.d(TAG, device.deviceName)
 
-
             if (!manager.hasPermission(device)) {
                 manager.requestPermission(device, permissionIntent)
             }
-
-
         }
+
+        // 핸드쉐이킹 센서(가속도 센서)
+        sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+
+        Objects.requireNonNull(sensorManager)!!
+            .registerListener(sensorListener, sensorManager!!
+            .getDefaultSensor(Sensor.TYPE_ACCELEROMETER),SensorManager.SENSOR_DELAY_NORMAL)
+
+        acceleration = 20f
+        currentAcceleration = SensorManager.GRAVITY_EARTH
+        lastAcceleration = SensorManager.GRAVITY_EARTH
+    }
+
+    // 핸드쉐이킹 기능 구현
+    private val sensorListener: SensorEventListener = object : SensorEventListener {
+        override fun onSensorChanged(event: SensorEvent) {
+            val x = event.values[0]
+            val y = event.values[1]
+            val z = event.values[2]
+            lastAcceleration = currentAcceleration
+
+            currentAcceleration = sqrt((x * x + y * y + z * z).toDouble()).toFloat()
+            val delta: Float = currentAcceleration - lastAcceleration
+            acceleration = acceleration * 0.9f + delta
+
+
+            if (acceleration > 15) {
+
+                val now:Long = System.currentTimeMillis()
+
+                if (mShakeTimestamp + SHAKE_SLOP_TIME_MS > now) {
+                    return
+                }
+                if (mShakeTimestamp + SHAKE_COUNT_RESET_TIME_MS < now) {
+                    mShakeCount = 0
+                }
+                mShakeTimestamp = now;
+                mShakeCount++;
+
+                navigateToNewFragment()
+            }
+        }
+        override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {}
+    }
+
+    private fun navigateToNewFragment() {
+        val navController: NavController = findNavController(R.id.fragmentContainerView)
+
+        // 프래그먼트마다의 핸드쉐이크 기능 구분
+        when (navController.currentDestination?.id) {
+            R.id.homeFragment -> navController.navigate(R.id.home_to_walk_start)
+            R.id.walkStartFragment -> navController.navigate(R.id.walk_start_to_home)
+        }
+
     }
 
 
@@ -78,9 +143,9 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-
-
     }
+
+
 
 
     companion object {

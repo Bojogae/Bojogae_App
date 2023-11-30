@@ -16,7 +16,6 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_home, container, false)
 
         val walkStartBtn = view.findViewById<Button>(R.id.walkStartBtn)
@@ -32,7 +31,7 @@ class HomeFragment : Fragment() {
         }
 
         settingsBtn.setOnClickListener {
-            findNavController().navigate(R.id.home_to_roading)
+            findNavController().navigate(R.id.home_to_setting)
         }
 
         return view
