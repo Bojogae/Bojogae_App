@@ -8,23 +8,27 @@ import com.bojogae.bojogae_app.utils.AppUtil
 import com.serenegiant.usb.IFrameCallback
 import com.serenegiant.usb.common.BaseActivity
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.opencv.android.Utils
-import org.opencv.calib3d.StereoSGBM
 import org.opencv.core.Core
 import org.opencv.core.CvType
 import org.opencv.core.Mat
+import org.opencv.core.MatOfByte
 import org.opencv.core.MatOfRect
 import org.opencv.core.Point
 import org.opencv.core.Scalar
+import org.opencv.imgcodecs.Imgcodecs
 import org.opencv.imgproc.Imgproc
 import org.opencv.objdetect.CascadeClassifier
 import java.io.File
 import java.io.FileOutputStream
+import java.math.RoundingMode
 import java.nio.ByteBuffer
-import kotlin.coroutines.CoroutineContext
 import kotlin.math.pow
 
 
@@ -36,26 +40,51 @@ class DistanceAnalyzer(val context: Context) : CoroutineScope {
 
     private var lbpCascadeClassifier: CascadeClassifier? = null
 
-    private var leftByteBuffer: ByteBuffer? = null
-    private var rightByteBuffer: ByteBuffer? = null
-    var flag = true
+    private var leftBuffer: ByteBuffer? = null
+    private var rightBuffer: ByteBuffer? = null
 
+    var flag = true
+    var leftSync = false
+    var rightSync = false
+
+    private val syncListener = object : OnSyncListener {
+        override fun onSyncSuccess() {
+            if (leftBuffer != null && rightBuffer != null && initFinished) {
+                analyze(leftBuffer!!.duplicate(), rightBuffer!!.duplicate())
+            }
+        }
+    }
 
 
 
     val iFrameLeftCallback = IFrameCallback {
         synchronized(lock) {
-            leftByteBuffer = it.duplicate()
-            if (leftByteBuffer != null && rightByteBuffer != null && initFinished) {
-                analyze(leftByteBuffer!!.duplicate(), rightByteBuffer!!.duplicate()) // 복사본을 전달합니다.
+            leftBuffer = it.duplicate()
+            leftSync = true
+            if (rightSync) {
+                leftSync = false
+                rightSync = false
+                syncListener.onSyncSuccess()
             }
+
         }
     }
 
     val iFrameRightCallback = IFrameCallback {
         synchronized(lock) {
-            rightByteBuffer = it.duplicate()
+            rightBuffer = it.duplicate()
+            rightSync = true
+            if (leftSync) {
+                leftSync = false
+                rightSync = false
+                syncListener.onSyncSuccess()
+            }
         }
+    }
+
+
+    interface OnSyncListener {
+        fun onSyncSuccess()
     }
 
 
@@ -96,22 +125,17 @@ class DistanceAnalyzer(val context: Context) : CoroutineScope {
         fileOutputStream.close()
         file.delete()
 
+
         onCalibrateFinished.onSuccess()
+    }
+
+    fun start() {
 
     }
 
 
 
-
-
     private fun analyze(leftBuffer: ByteBuffer, rightBuffer: ByteBuffer) {
-        launch {
-
-        }
-
-        leftBuffer.clear()
-        rightBuffer.clear()
-
         val srcLeftBitmap = Bitmap.createBitmap(AppUtil.DEFAULT_WIDTH, AppUtil.DEFAULT_HEIGHT, Bitmap.Config.RGB_565)
         srcLeftBitmap.copyPixelsFromBuffer(leftBuffer)
 
@@ -132,8 +156,8 @@ class DistanceAnalyzer(val context: Context) : CoroutineScope {
         Imgproc.cvtColor(rgbRightMat, greyRightMat, Imgproc.COLOR_RGB2GRAY)
 
 
+        val disparityMat = DisparityMapProcessor.calDisparityMap(greyLeftMat, greyRightMat)
 
-        val disparityMat = DisparityMapProcessor.calculateDisparityMap(greyLeftMat, greyRightMat)
         disparityMat.convertTo(disparityMat, CvType.CV_32F)
         Core.divide(disparityMat, Scalar(16.0), disparityMat)
         Core.subtract(disparityMat, Scalar(2.0), disparityMat)
@@ -152,19 +176,16 @@ class DistanceAnalyzer(val context: Context) : CoroutineScope {
             val faceCenterY = rect.y + rect.height / 2
 
             Imgproc.rectangle(rgbLeftMat, rect, Scalar(0.0, 255.0, 0.0), 3)
-            val distance = faceDistance(faceCenterX, faceCenterY, disparityMat)
-            val distanceToString = "%.2f".format(distance * 0.01)
+            val distance = faceDistance(faceCenterX, faceCenterY, disparityMat).toString()
 
-            Imgproc.putText(rgbLeftMat, "$distanceToString m", Point(rect.x.toDouble(), (rect.y - 10).toDouble()),
+            Imgproc.putText(rgbLeftMat, "$distance m", Point(rect.x.toDouble(), (rect.y - 10).toDouble()),
                 Imgproc.FONT_HERSHEY_SIMPLEX, 0.9, Scalar(255.0, 0.0, 0.0, 255.0), 2)
         }
 
 
-        Core.normalize(disparityMat, disparityMat, 0.0, 255.0, Core.NORM_MINMAX)
-        disparityMat.convertTo(disparityMat, CvType.CV_8U)
-
+        val filteredMap = DisparityMapProcessor.calFilteredMap(greyLeftMat, greyRightMat)
         val disparityBitmap = Bitmap.createBitmap(AppUtil.DEFAULT_WIDTH, AppUtil.DEFAULT_HEIGHT, Bitmap.Config.RGB_565)
-        Utils.matToBitmap(disparityMat, disparityBitmap)
+        Utils.matToBitmap(filteredMap, disparityBitmap)
 
 
         val detectResultBitmap = Bitmap.createBitmap(AppUtil.DEFAULT_WIDTH, AppUtil.DEFAULT_HEIGHT, Bitmap.Config.RGB_565)
@@ -176,17 +197,17 @@ class DistanceAnalyzer(val context: Context) : CoroutineScope {
 
     private fun faceDistance(x: Int, y: Int, disp: Mat): Double {
         var average = 0.0
-        for (u in -1..1) {
-            for (v in -1..1) {
+        for (u in -1 until 2) {
+            for (v in -1 until 2) {
                 val value = disp.get(y + u, x + v)
-                average += value.sum()
+                average += value[0]
             }
         }
         average /= 9.0
 
-        return (-593.97 * average.pow(3) + 1506.8 * average.pow(2) - 1373.1 * average + 522.06)/2
+        val distance = -593.97 * average.pow(3) + 1506.8 * average.pow(2) - 1373.1 * average + 522.06
+
+        return (distance * 0.01).toBigDecimal().setScale(2, RoundingMode.HALF_EVEN).toDouble()
     }
-
-
 
 }

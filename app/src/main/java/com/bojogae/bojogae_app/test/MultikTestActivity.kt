@@ -8,6 +8,7 @@ import com.bojogae.bojogae_app.utils.AppUtil
 import org.opencv.android.OpenCVLoader
 import org.opencv.core.CvType
 import org.opencv.core.Mat
+import org.opencv.videoio.VideoCapture
 
 
 class MultikTestActivity : AppCompatActivity() {
@@ -16,13 +17,7 @@ class MultikTestActivity : AppCompatActivity() {
         setContentView(R.layout.activity_multik_test)
         OpenCVLoader.initDebug()
 
-        val objp = Mat(9 * 6, 1, CvType.CV_32FC3)
-        var idx = 0
-        for (i in 0 until 6) {
-            for (j in 0 until 9) {
-                objp.put(idx++, 0, j.toDouble(), i.toDouble(), 0.0)
-            }
-        }
+        val videoCapture = VideoCapture()
 
 
 

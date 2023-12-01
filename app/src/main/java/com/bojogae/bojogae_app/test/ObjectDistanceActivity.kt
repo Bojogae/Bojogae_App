@@ -2,12 +2,14 @@ package com.bojogae.bojogae_app.test
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Canvas
 import android.hardware.usb.UsbDevice
 import android.os.Bundle
 import android.util.Log
 import android.view.Surface
 import android.view.View.OnClickListener
 import android.widget.Toast
+import androidx.core.view.drawToBitmap
 import com.bojogae.bojogae_app.R
 import com.bojogae.bojogae_app.analyzer.DistanceAnalyzer
 import com.bojogae.bojogae_app.databinding.ActivityObjectDistanceBinding
@@ -170,6 +172,7 @@ class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
                 val st = cameraViewRight.surfaceTexture
                 handlerR.setPreviewCallback(distanceAnalyzer.iFrameRightCallback)
                 handlerR.startPreview(Surface(st))
+
 
             }
         }
