@@ -40,6 +40,8 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
 
+import androidx.annotation.RequiresApi;
+
 import com.jiangdg.usbcamera.utils.FileUtils;
 import com.serenegiant.utils.BuildCheck;
 import com.serenegiant.utils.HandlerThreadHandler;
@@ -168,6 +170,7 @@ public final class USBMonitor {
 	 * register BroadcastReceiver to monitor USB events
 	 * @throws IllegalStateException
 	 */
+	@RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
 	public synchronized void register() throws IllegalStateException {
 		if (destroyed) throw new IllegalStateException("already destroyed");
 		if (mPermissionIntent == null) {
@@ -181,7 +184,7 @@ public final class USBMonitor {
 				// ACTION_USB_DEVICE_ATTACHED never comes on some devices so it should not be added here
 				filter.addAction(ACTION_USB_DEVICE_ATTACHED);
 				filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
-				context.registerReceiver(mUsbReceiver, filter);
+				context.registerReceiver(mUsbReceiver, filter, Context.RECEIVER_EXPORTED);
 			}
 			// start connection check
 			mDeviceCounts = 0;
