@@ -49,6 +49,19 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FaceDetectDistanceOpenCVUVC"
         tools:targetApi="31">
+
+        <activity
+            android:name=".test.native_cpp.NativeTestActivity"
+            android:exported="true" >
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+
         <activity
             android:name=".test.MultikTestActivity"
             android:exported="true" >
