@@ -7,6 +7,10 @@ import com.bojogae.bojogae_app.R
 import com.bojogae.bojogae_app.utils.AppUtil
 import com.serenegiant.usb.IFrameCallback
 import com.serenegiant.usb.common.BaseActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import org.opencv.android.Utils
 import org.opencv.calib3d.StereoSGBM
 import org.opencv.core.Core
@@ -20,10 +24,12 @@ import org.opencv.objdetect.CascadeClassifier
 import java.io.File
 import java.io.FileOutputStream
 import java.nio.ByteBuffer
+import kotlin.coroutines.CoroutineContext
 import kotlin.math.pow
 
 
-class DistanceAnalyzer(val context: Context) {
+class DistanceAnalyzer(val context: Context) : CoroutineScope {
+    override val coroutineContext = Dispatchers.Default + Job()
 
     private val lock = Any()
     private var initFinished = false
@@ -33,6 +39,8 @@ class DistanceAnalyzer(val context: Context) {
     private var leftByteBuffer: ByteBuffer? = null
     private var rightByteBuffer: ByteBuffer? = null
     var flag = true
+
+
 
 
     val iFrameLeftCallback = IFrameCallback {
@@ -97,6 +105,9 @@ class DistanceAnalyzer(val context: Context) {
 
 
     private fun analyze(leftBuffer: ByteBuffer, rightBuffer: ByteBuffer) {
+        launch {
+
+        }
 
         leftBuffer.clear()
         rightBuffer.clear()

@@ -1,4 +1,4 @@
-package com.bojogae.bojogae_app.analyzer
+package com.valpa.disparitymap.imageProcessing
 
 object DisparityParams {
 

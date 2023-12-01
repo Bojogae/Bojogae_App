@@ -27,6 +27,7 @@
         tools:ignore="ScopedStorage"/>
 
 
+
     <!-- uses feature -->
     <uses-feature android:name="android.hardware.camera.any" />
     <uses-feature
@@ -38,6 +39,7 @@
         android:required="true" />
 
     <application
+        android:requestLegacyExternalStorage="true"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
