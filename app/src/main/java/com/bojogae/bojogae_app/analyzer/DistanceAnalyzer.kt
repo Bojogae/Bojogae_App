@@ -3,7 +3,11 @@ package com.bojogae.bojogae_app.analyzer
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
+import android.view.TextureView
+import android.widget.ImageView
+import androidx.core.view.drawToBitmap
 import com.bojogae.bojogae_app.R
+import com.bojogae.bojogae_app.test.tensorflow_lite.midas.DrawingOverlay
 import com.bojogae.bojogae_app.utils.AppUtil
 import com.serenegiant.usb.IFrameCallback
 import com.serenegiant.usb.common.BaseActivity
@@ -35,7 +39,6 @@ import kotlin.math.pow
 class DistanceAnalyzer(val context: Context) : CoroutineScope {
     override val coroutineContext = Dispatchers.Default + Job()
 
-    private val lock = Any()
     private var initFinished = false
 
     private var lbpCascadeClassifier: CascadeClassifier? = null
@@ -43,14 +46,16 @@ class DistanceAnalyzer(val context: Context) : CoroutineScope {
     private var leftBuffer: ByteBuffer? = null
     private var rightBuffer: ByteBuffer? = null
 
+    lateinit var disparityView: ImageView
+    lateinit var resultView: ImageView
+
+
     var flag = true
-    var leftSync = false
-    var rightSync = false
 
     private val syncListener = object : OnSyncListener {
         override fun onSyncSuccess() {
             if (leftBuffer != null && rightBuffer != null && initFinished) {
-                analyze(leftBuffer!!.duplicate(), rightBuffer!!.duplicate())
+                analyze(leftBuffer!!, rightBuffer!!)
             }
         }
     }
@@ -58,28 +63,13 @@ class DistanceAnalyzer(val context: Context) : CoroutineScope {
 
 
     val iFrameLeftCallback = IFrameCallback {
-        synchronized(lock) {
-            leftBuffer = it.duplicate()
-            leftSync = true
-            if (rightSync) {
-                leftSync = false
-                rightSync = false
-                syncListener.onSyncSuccess()
-            }
-
-        }
+        leftBuffer = it
+        syncListener.onSyncSuccess()
     }
 
     val iFrameRightCallback = IFrameCallback {
-        synchronized(lock) {
-            rightBuffer = it.duplicate()
-            rightSync = true
-            if (leftSync) {
-                leftSync = false
-                rightSync = false
-                syncListener.onSyncSuccess()
-            }
-        }
+        rightBuffer = it
+        syncListener.onSyncSuccess()
     }
 
 
@@ -129,9 +119,6 @@ class DistanceAnalyzer(val context: Context) : CoroutineScope {
         onCalibrateFinished.onSuccess()
     }
 
-    fun start() {
-
-    }
 
     private fun analyze(leftBuffer: ByteBuffer, rightBuffer: ByteBuffer) {
         val srcLeftBitmap = Bitmap.createBitmap(AppUtil.DEFAULT_WIDTH, AppUtil.DEFAULT_HEIGHT, Bitmap.Config.RGB_565)
@@ -143,12 +130,8 @@ class DistanceAnalyzer(val context: Context) : CoroutineScope {
         val rgbLeftMat = Mat()
         val rgbRightMat = Mat()
 
-
-
-
         Utils.bitmapToMat(srcLeftBitmap, rgbLeftMat)
         Utils.bitmapToMat(srcRightBitmap, rgbRightMat)
-
 
         val greyLeftMat = Mat()
         val greyRightMat = Mat()
@@ -164,15 +147,11 @@ class DistanceAnalyzer(val context: Context) : CoroutineScope {
         Core.subtract(disparityMat, Scalar(2.0), disparityMat)
         Core.divide(disparityMat, Scalar(128.0), disparityMat)
 
-
         val facesLeftRects = MatOfRect()
         lbpCascadeClassifier?.detectMultiScale(greyLeftMat, facesLeftRects, 1.1, 3)
         val facesLeftRectList = facesLeftRects.toList()
 
-
-        // 얼굴 인식 및 거리 측정
         for (rect in facesLeftRectList) {
-            // 얼굴 중심점의 좌표 계산
             val faceCenterX = rect.x + rect.width / 2
             val faceCenterY = rect.y + rect.height / 2
 
@@ -183,17 +162,15 @@ class DistanceAnalyzer(val context: Context) : CoroutineScope {
                 Imgproc.FONT_HERSHEY_SIMPLEX, 0.9, Scalar(255.0, 0.0, 0.0, 255.0), 2)
         }
 
-
         val filteredMap = DisparityMapProcessor.calFilteredMap(greyLeftMat, greyRightMat)
         val disparityBitmap = Bitmap.createBitmap(AppUtil.DEFAULT_WIDTH, AppUtil.DEFAULT_HEIGHT, Bitmap.Config.RGB_565)
         Utils.matToBitmap(filteredMap, disparityBitmap)
 
-
         val detectResultBitmap = Bitmap.createBitmap(AppUtil.DEFAULT_WIDTH, AppUtil.DEFAULT_HEIGHT, Bitmap.Config.RGB_565)
         Utils.matToBitmap(rgbLeftMat, detectResultBitmap)
 
-        resultListener?.onResult(disparityBitmap, detectResultBitmap)
-
+        disparityView.setImageBitmap(disparityBitmap)
+        resultView.setImageBitmap(detectResultBitmap)
     }
 
     private fun faceDistance(x: Int, y: Int, disp: Mat): Double {

@@ -73,14 +73,6 @@ class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
 
 
         distanceAnalyzer = DistanceAnalyzer(this)
-        distanceAnalyzer.resultListener = object : DistanceAnalyzer.OnResultListener {
-            override fun onResult(leftBitmap: Bitmap, rightBitmap: Bitmap) {
-                runOnUiThread {
-                    viewBinding.disparityMap.setImageBitmap(leftBitmap)
-                    viewBinding.objectDetect.setImageBitmap(rightBitmap)
-                }
-            }
-        }
 
         cameraViewLeft = viewBinding.cameraViewLeft
         cameraViewLeft.aspectRatio = (AppUtil.DEFAULT_WIDTH / AppUtil.DEFAULT_HEIGHT.toFloat()).toDouble()
@@ -104,6 +96,12 @@ class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
 
         Log.d(AppUtil.DEBUG_TAG, "oncreate")
 
+        distanceAnalyzer.disparityView = viewBinding.disparityMap
+        distanceAnalyzer.disparityView.setWillNotDraw(false)
+
+
+        distanceAnalyzer.resultView = viewBinding.objectDetect
+        distanceAnalyzer.resultView.setWillNotDraw(false)
     }
 
     override fun onStart() {
