@@ -36,3 +36,4 @@ dependencyResolutionManagement {
 rootProject.name = "Bojogae_App"
 include ':app'
 include ':libusbcamera'
+include ':libopencv'

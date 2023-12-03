@@ -22,6 +22,8 @@ object DisparityMapProcessor {
         32,
         StereoSGBM.MODE_SGBM)
 
+
+
     fun calDisparityMap(img1: Mat, img2: Mat): Mat {
         val disparityMapLeft = Mat()
         leftStereoSGBM.compute(img1, img2, disparityMapLeft)
