@@ -133,8 +133,6 @@ class DistanceAnalyzer(val context: Context) : CoroutineScope {
 
     }
 
-
-
     private fun analyze(leftBuffer: ByteBuffer, rightBuffer: ByteBuffer) {
         val srcLeftBitmap = Bitmap.createBitmap(AppUtil.DEFAULT_WIDTH, AppUtil.DEFAULT_HEIGHT, Bitmap.Config.RGB_565)
         srcLeftBitmap.copyPixelsFromBuffer(leftBuffer)
@@ -144,6 +142,9 @@ class DistanceAnalyzer(val context: Context) : CoroutineScope {
 
         val rgbLeftMat = Mat()
         val rgbRightMat = Mat()
+
+
+
 
         Utils.bitmapToMat(srcLeftBitmap, rgbLeftMat)
         Utils.bitmapToMat(srcRightBitmap, rgbRightMat)

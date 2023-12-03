@@ -10,4 +10,8 @@ object AppUtil {
     fun log(tag: String, message: String) {
         Log.d(tag, message)
     }
+
+    fun ld(message: String) {
+        Log.d(AppUtil.DEBUG_TAG, message)
+    }
 }
