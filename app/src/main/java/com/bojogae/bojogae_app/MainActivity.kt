@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
+import com.bojogae.bojogae_app.listener.SensorListener
 import java.util.Objects
 
 private const val PERMISSIONS_REQUEST_CODE = 10

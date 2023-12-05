@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.bojogae.bojogae_app.HomeFragment"
+        android:name="com.bojogae.bojogae_app.ui.home.HomeFragment"
         android:label="fragment_home"
         tools:layout="@layout/fragment_home" >
         <action
@@ -30,7 +30,7 @@
     </fragment>
     <fragment
         android:id="@+id/walkStartFragment"
-        android:name="com.bojogae.bojogae_app.WalkStartFragment"
+        android:name="com.bojogae.bojogae_app.ui.walk.WalkStartFragment"
         android:label="fragment_walk_start"
         tools:layout="@layout/fragment_walk_start" >
         <action
@@ -41,7 +41,7 @@
     </fragment>
     <fragment
         android:id="@+id/guideFragment"
-        android:name="com.bojogae.bojogae_app.GuideFragment"
+        android:name="com.bojogae.bojogae_app.ui.guide.GuideFragment"
         android:label="fragment_guide"
         tools:layout="@layout/fragment_guide" >
         <action
@@ -52,7 +52,7 @@
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
-        android:name="com.bojogae.bojogae_app.SettingsFragment"
+        android:name="com.bojogae.bojogae_app.ui.setting.SettingsFragment"
         android:label="fragment_settings"
         tools:layout="@layout/fragment_settings" >
         <action
@@ -61,7 +61,7 @@
     </fragment>
     <fragment
         android:id="@+id/roadingFragment"
-        android:name="com.bojogae.bojogae_app.RoadingFragment"
+        android:name="com.bojogae.bojogae_app.ui.splash.RoadingFragment"
         android:label="fragment_roading"
         tools:layout="@layout/fragment_roading" >
         <action

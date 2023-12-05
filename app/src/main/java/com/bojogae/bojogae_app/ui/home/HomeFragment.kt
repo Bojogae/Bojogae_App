@@ -1,12 +1,12 @@
-package com.bojogae.bojogae_app
+package com.bojogae.bojogae_app.ui.home
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import androidx.navigation.fragment.findNavController
+import com.bojogae.bojogae_app.R
 import com.bojogae.bojogae_app.databinding.FragmentHomeBinding
 
 /**

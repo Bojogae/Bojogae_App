@@ -1,4 +1,4 @@
-package com.bojogae.bojogae_app
+package com.bojogae.bojogae_app.listener
 
 import android.hardware.Sensor
 import android.hardware.SensorEvent
