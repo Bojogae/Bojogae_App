@@ -45,7 +45,7 @@
                 android:textStyle="bold" />
 
             <Switch
-                android:id="@+id/switchButton"
+                android:id="@+id/carBtn"
                 android:layout_width="0dp"
                 android:layout_height="60dp"
                 android:layout_weight="1"
@@ -71,7 +71,7 @@
                 android:textStyle="bold" />
 
             <Switch
-                android:id="@+id/switchButton1"
+                android:id="@+id/boardBtn"
                 android:layout_width="0dp"
                 android:layout_height="60dp"
                 android:layout_weight="1"
@@ -96,7 +96,7 @@
                 android:textStyle="bold" />
 
             <Switch
-                android:id="@+id/switchButton2"
+                android:id="@+id/stairsBtn"
                 android:layout_width="0dp"
                 android:layout_height="60dp"
                 android:layout_weight="1"
@@ -121,7 +121,7 @@
                 android:textStyle="bold" />
 
             <Switch
-                android:id="@+id/switchButton3"
+                android:id="@+id/humanBtn"
                 android:layout_width="0dp"
                 android:layout_height="60dp"
                 android:layout_weight="1"
@@ -166,7 +166,6 @@
             android:textStyle="bold"
             android:layout_marginTop="30dp"
             android:gravity="center"/>
-        />
 
         <View
             android:layout_width="match_parent"
@@ -190,7 +189,7 @@
                 android:textStyle="bold" />
 
             <Switch
-                android:id="@+id/switchButton4"
+                android:id="@+id/shakeBtn"
                 android:layout_width="0dp"
                 android:layout_height="60dp"
                 android:layout_weight="1"
