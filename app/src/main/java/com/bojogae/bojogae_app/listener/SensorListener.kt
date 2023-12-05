@@ -4,6 +4,7 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import com.bojogae.bojogae_app.utils.AppUtil
 import kotlin.math.sqrt
 
 private const val SHAKE_SLOP_TIME_MS = 500
@@ -37,14 +38,11 @@ class SensorListener: SensorEventListener {
             val x = event.values[0]
             val y = event.values[1]
             val z = event.values[2]
+
             lastAcceleration = currentAcceleration
-
             currentAcceleration = sqrt((x * x + y * y + z * z).toDouble()).toFloat()
-            val delta: Float = currentAcceleration - lastAcceleration
-            acceleration = acceleration * 0.9f + delta
 
-            if (acceleration > 15) {
-
+            if (currentAcceleration > 7) {
                 val now:Long = System.currentTimeMillis()
 
                 if (mShakeTimestamp + SHAKE_SLOP_TIME_MS > now) {
@@ -56,7 +54,10 @@ class SensorListener: SensorEventListener {
                 mShakeTimestamp = now
                 mShakeCount++
 
-                mListener?.onShake(mShakeCount)
+                if (mShakeCount == 2) {
+                    mShakeCount = 0
+                    mListener?.onShake(mShakeCount)
+                }
             }
         }
 

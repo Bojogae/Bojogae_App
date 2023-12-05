@@ -38,7 +38,8 @@ class HomeFragment : Fragment() {
 
 
         walkStartBtn.setOnClickListener{
-            findNavController().navigate(R.id.home_to_walk_start)
+            val action = HomeFragmentDirections.homeToWalkStart()
+            findNavController().navigate(action)
         }
 
         guideBtn.setOnClickListener{

@@ -15,3 +15,5 @@ object AppUtil {
         Log.d(AppUtil.DEBUG_TAG, message)
     }
 }
+
+

@@ -6,8 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.bojogae.bojogae_app.R
+import com.bojogae.bojogae_app.databinding.FragmentWalkStartBinding
 
 /**
  * 사용자가 "보행 시작" 버튼을 눌렀을 때 카메라로 객체 탐지를 시작하는 화면
@@ -17,19 +19,36 @@ import com.bojogae.bojogae_app.R
  */
 class WalkStartFragment : Fragment() {
 
+    private var _viewBinding: FragmentWalkStartBinding? = null
+    private val viewBinding get() = _viewBinding!!
+
+    private var viewModel: WalkStartViewModel? = null
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_walk_start, container, false)
+    ): View {
+        _viewBinding = FragmentWalkStartBinding.inflate(layoutInflater)
 
-        val homeBtn = view.findViewById<Button>(R.id.homeBtn)
+        viewModel = ViewModelProvider(requireActivity())[WalkStartViewModel::class.java]
 
-        homeBtn.setOnClickListener{
-            findNavController().navigate(R.id.walk_start_to_home)
+        viewBinding.homeBtn.setOnClickListener{
+            findNavController().navigate(WalkStartFragmentDirections.walkStartToHome())
         }
 
-        return view
+
+
+
+
+
+        return viewBinding.root
     }
+
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _viewBinding = null
+    }
+
 
 }

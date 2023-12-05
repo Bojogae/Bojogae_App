@@ -9,6 +9,8 @@ import com.bojogae.bojogae_app.R
 
 class CameraPreviewFragment : Fragment() {
 
+
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
