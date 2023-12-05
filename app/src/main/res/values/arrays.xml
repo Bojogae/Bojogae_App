@@ -1,0 +1,7 @@
+<resources>
+    <string-array name="your_array">
+        <item>안경</item>
+        <item>자동차</item>
+        <item>안경, 자동차</item>
+    </string-array>
+</resources>

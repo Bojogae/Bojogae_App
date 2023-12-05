@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/my_nav"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.bojogae.bojogae_app.HomeFragment"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/home_to_walk_start"
+            app:destination="@id/walkStartFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left" />
+        <action
+            android:id="@+id/home_to_guide"
+            app:destination="@id/guideFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/home_to_setting"
+            app:destination="@id/settingsFragment" />
+
+        <action
+            android:id="@+id/home_to_roading"
+            app:destination="@id/roadingFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/walkStartFragment"
+        android:name="com.bojogae.bojogae_app.WalkStartFragment"
+        android:label="fragment_walk_start"
+        tools:layout="@layout/fragment_walk_start" >
+        <action
+            android:id="@+id/walk_start_to_home"
+            app:destination="@id/homeFragment"
+            app:enterAnim="@anim/slide_in_left"
+            app:exitAnim="@anim/slide_out_right" />
+    </fragment>
+    <fragment
+        android:id="@+id/guideFragment"
+        android:name="com.bojogae.bojogae_app.GuideFragment"
+        android:label="fragment_guide"
+        tools:layout="@layout/fragment_guide" >
+        <action
+            android:id="@+id/guide_to_home"
+            app:destination="@id/homeFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left" />
+    </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.bojogae.bojogae_app.SettingsFragment"
+        android:label="fragment_settings"
+        tools:layout="@layout/fragment_settings" >
+        <action
+            android:id="@+id/setting_to_home"
+            app:destination="@id/homeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/roadingFragment"
+        android:name="com.bojogae.bojogae_app.RoadingFragment"
+        android:label="fragment_roading"
+        tools:layout="@layout/fragment_roading" >
+        <action
+            android:id="@+id/roading_to_home"
+            app:destination="@id/homeFragment" />
+    </fragment>
+</navigation>
