@@ -7,20 +7,35 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.navigation.fragment.findNavController
+import com.bojogae.bojogae_app.databinding.FragmentHomeBinding
 
 /**
  * 앱의 메인 화면
  */
 class HomeFragment : Fragment() {
+
+    private var _viewBinding: FragmentHomeBinding? = null
+    private val viewBinding get() = _viewBinding!!
+
+
     override fun onCreateView(
+
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_home, container, false)
+    ): View {
+        _viewBinding = FragmentHomeBinding.inflate(layoutInflater)
 
-        val walkStartBtn = view.findViewById<Button>(R.id.walkStartBtn)
-        val guideBtn = view. findViewById<Button>(R.id.guideBtn)
-        val settingsBtn = view.findViewById<Button>(R.id.settingBtn)
+
+
+
+        val walkStartBtn = viewBinding.btnStartWalk
+
+
+
+        val guideBtn = viewBinding.btnGuide
+        val settingsBtn = viewBinding.btnSetting
+
+
 
         walkStartBtn.setOnClickListener{
             findNavController().navigate(R.id.home_to_walk_start)
@@ -34,6 +49,6 @@ class HomeFragment : Fragment() {
             findNavController().navigate(R.id.home_to_setting)
         }
 
-        return view
+        return viewBinding.root
     }
 }
