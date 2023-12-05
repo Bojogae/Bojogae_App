@@ -24,9 +24,6 @@
             android:id="@+id/home_to_setting"
             app:destination="@id/settingsFragment" />
 
-        <action
-            android:id="@+id/home_to_roading"
-            app:destination="@id/roadingFragment" />
     </fragment>
     <fragment
         android:id="@+id/walkStartFragment"
@@ -38,6 +35,9 @@
             app:destination="@id/homeFragment"
             app:enterAnim="@anim/slide_in_left"
             app:exitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_walkStartFragment_to_cameraPreviewFragment"
+            app:destination="@id/cameraPreviewFragment" />
     </fragment>
     <fragment
         android:id="@+id/guideFragment"
@@ -60,12 +60,12 @@
             app:destination="@id/homeFragment" />
     </fragment>
     <fragment
-        android:id="@+id/roadingFragment"
-        android:name="com.bojogae.bojogae_app.RoadingFragment"
-        android:label="fragment_roading"
-        tools:layout="@layout/fragment_roading" >
+        android:id="@+id/cameraPreviewFragment"
+        android:name="com.bojogae.bojogae_app.CameraPreviewFragment"
+        android:label="fragment_camera_preview"
+        tools:layout="@layout/fragment_camera_preview" >
         <action
-            android:id="@+id/roading_to_home"
-            app:destination="@id/homeFragment" />
+            android:id="@+id/action_cameraPreviewFragment_to_walkStartFragment"
+            app:destination="@id/walkStartFragment" />
     </fragment>
 </navigation>
