@@ -8,7 +8,6 @@ plugins {
 android {
     namespace 'com.bojogae.bojogae_app'
     compileSdk rootProject.ext.compileSdk
-
     defaultConfig {
         applicationId "com.bojogae.bojogae_app"
         minSdk rootProject.ext.minSdk
