@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/drawable/rounded_button.xml -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#000000"/> <!-- 검은색 배경 -->
+            <corners android:radius="15dp"/> <!-- 모서리 둥글기 -->
+            <stroke android:color="#FFFFFF" android:width="2dp"/> <!-- 흰색 태두리 -->
+        </shape>
+    </item>
+</selector>

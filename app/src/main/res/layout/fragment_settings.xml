@@ -1,204 +1,163 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#000000"
     tools:context=".ui.setting.SettingsFragment">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#000000"
-        android:orientation="vertical"
-        android:padding="15dp"
-        tools:layout_editor_absoluteX="-29dp"
-        tools:layout_editor_absoluteY="16dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="감지 객체 설정"
-            android:textColor="#FFFFFF"
-            android:textSize="40sp"
-            android:textStyle="bold" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="6dp"
-            android:background="#FFFFFF" />
+        tools:context=".ui.setting.SettingsFragment">
 
         <LinearLayout
+            android:paddingVertical="10dp"
+            android:paddingHorizontal="20dp"
+            android:orientation="vertical"
+            android:id="@+id/ll_object_detect_setting"
+            app:layout_constraintTop_toTopOf="parent"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content" >
 
             <TextView
-                android:layout_width="0dp"
+                android:textStyle="bold"
+                android:layout_marginTop="10dp"
+                android:maxLines="1"
+                android:textSize="30sp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:drawableRight="@drawable/ic_glasses_white"
+                android:layout_marginEnd="13dp"
+                android:text="객체 감지 목록 설정"
+                android:textColor="@color/white" />
+
+            <View
+                android:layout_marginTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="#FFFFFF" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/sc_detect_object_car"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:text="자동차"
-                android:textColor="#FFFFFF"
-                android:textSize="30sp"
-                android:textStyle="bold" />
+                style="@style/setting_item_size25_colorWhite_margin10dp"/>
 
-            <Switch
-                android:id="@+id/switchButton"
-                android:layout_width="0dp"
-                android:layout_height="60dp"
-                android:layout_weight="1"
-                android:checked="false"
-                android:thumbTint="#FFFFFF"
-                android:trackTint="#7FFCFF"
-                android:background="#000000" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="0dp"
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/sc_detect_object_kick_board"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:text="킥보드"
-                android:textColor="#FFFFFF"
-                android:textSize="30sp"
-                android:textStyle="bold" />
+                style="@style/setting_item_size25_colorWhite_margin10dp"/>
 
-            <Switch
-                android:id="@+id/switchButton1"
-                android:layout_width="0dp"
-                android:layout_height="60dp"
-                android:layout_weight="1"
-                android:checked="false"
-                android:thumbTint="#FFFFFF"
-                android:trackTint="#7FFCFF"
-                android:background="#000000" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="0dp"
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/sc_detect_object_stair"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:text="계단"
-                android:textColor="#FFFFFF"
-                android:textSize="30sp"
-                android:textStyle="bold" />
+                style="@style/setting_item_size25_colorWhite_margin10dp"/>
 
-            <Switch
-                android:id="@+id/switchButton2"
-                android:layout_width="0dp"
-                android:layout_height="60dp"
-                android:layout_weight="1"
-                android:checked="false"
-                android:thumbTint="#FFFFFF"
-                android:trackTint="#7FFCFF"
-                android:background="#000000" />
-        </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="0dp"
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/sc_detect_object_human"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:text="사람"
-                android:textColor="#FFFFFF"
-                android:textSize="30sp"
-                android:textStyle="bold" />
+                style="@style/setting_item_size25_colorWhite_margin10dp"/>
 
-            <Switch
-                android:id="@+id/switchButton3"
-                android:layout_width="0dp"
-                android:layout_height="60dp"
-                android:layout_weight="1"
-                android:checked="false"
-                android:thumbTint="#FFFFFF"
-                android:trackTint="#2196F3"
-                android:background="#000000" />
+            <View
+                android:layout_marginTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="#FFFFFF" />
+
         </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="6dp"
-            android:layout_marginBottom="45dp"
-            android:background="#FFFFFF" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingRight="15dp"
-            android:text="현재 감지 수단"
-            android:textColor="#FFFFFF"
-            android:textSize="30sp"
-            android:textStyle="bold" />
-
-        <Spinner
-            android:id="@+id/spinner"
-            android:layout_width="257dp"
-            android:layout_height="32dp"
-            android:background="#FFFFFF"
-            android:layout_marginTop="5dp"
-            android:entries="@array/your_array" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="30dp"
-            android:paddingRight="30dp"
-            android:text="블루투스 설정"
-            android:background="@drawable/rounded_background"
-            android:textColor="#000000"
-            android:textSize="30sp"
-            android:textStyle="bold"
-            android:layout_marginTop="30dp"
-            android:gravity="center"/>
-        />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="6dp"
-            android:layout_marginTop="30dp"
-            android:background="#FFFFFF" />
 
         <LinearLayout
+            android:id="@+id/ll_current_detect_state"
+            android:layout_marginTop="10dp"
+            android:paddingVertical="10dp"
+            android:paddingHorizontal="20dp"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@id/ll_object_detect_setting"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content" >
 
             <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginTop="20dp"
-                android:text="흔들기"
-                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                android:maxLines="1"
                 android:textSize="30sp"
-                android:textStyle="bold" />
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableRight="@drawable/ic_camera_white"
+                android:layout_marginEnd="13dp"
+                android:text="현재 감지 수단"
+                android:textColor="@color/white" />
 
-            <Switch
-                android:id="@+id/switchButton4"
-                android:layout_width="0dp"
-                android:layout_height="60dp"
-                android:layout_weight="1"
+            <Spinner
+                android:id="@+id/spinner_discover_device"
+                android:popupBackground="@drawable/shape_round_black_bg_white_stroke"
+                android:background="@drawable/shape_round_black_bg_white_stroke"
                 android:layout_marginTop="20dp"
-                android:checked="false"
-                android:thumbTint="#FFFFFF"
-                android:trackTint="#FFFFFF"
-                android:background="#000000" />
+                android:layout_width="match_parent"
+                android:paddingVertical="16dp"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/btn_connect_device"
+                android:background="@drawable/shape_round_black_bg_white_stroke"
+                android:paddingVertical="13dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/setting_item_size20_colorWhite_margin10dp"
+                android:text="장치 연결 설정" />
+
+
+            <View
+                android:layout_marginTop="30dp"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="#FFFFFF" />
+
         </LinearLayout>
 
-    </LinearLayout>
+        <LinearLayout
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="50dp"
+            android:layout_marginTop="10dp"
+            android:paddingVertical="10dp"
+            android:paddingHorizontal="20dp"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@id/ll_current_detect_state"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:textStyle="bold"
+                android:maxLines="1"
+                android:textSize="30sp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableRight="@drawable/ic_smart_phone_white"
+                android:layout_marginEnd="13dp"
+                android:text="동작 설정"
+                android:textColor="@color/white" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/sc_shake_control"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="흔들어서 화면 이동"
+                style="@style/setting_item_size25_colorWhite_margin10dp"/>
+
+
+        </LinearLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>

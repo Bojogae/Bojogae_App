@@ -4,10 +4,24 @@
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
 
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorPrimary">#FF5722</item>
+        <item name="colorPrimaryDark">#E88363</item>
+        <item name="colorAccent">#FF6822</item>
     </style>
 
     <style name="Theme.FaceDetectDistanceOpenCVUVC" parent="Base.Theme.FaceDetectDistanceOpenCVUVC" />
+
+    <style name="setting_item_size25_colorWhite_margin10dp">
+        <item name="android:layout_marginTop">20dp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">25sp</item>
+    </style>
+
+    <style name="setting_item_size20_colorWhite_margin10dp">
+        <item name="android:layout_marginTop">20dp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+
 </resources>

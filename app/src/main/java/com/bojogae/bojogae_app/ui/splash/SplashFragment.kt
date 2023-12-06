@@ -40,7 +40,7 @@ class SplashFragment : Fragment() {
             handler.postDelayed({
                 val action = SplashFragmentDirections.actionSplashFragmentToHomeFragment()
                 findNavController().navigate(action)
-            }, 3000)
+            }, 2000)
         }
 
         override fun onFailure() {

@@ -59,21 +59,25 @@
         </activity>
         <activity
             android:name=".test.tensorflow_lite.midas.MidasActivity"
-            android:exported="false">
-        </activity>
+            android:exported="false" />
         <activity
             android:name=".test.MultikTestActivity"
             android:exported="false" />
         <activity
             android:name=".test.ObjectDistanceActivity"
-            android:exported="false">
-        </activity>
+            android:exported="false" />
         <activity
             android:name=".test.PermissionRequestActivity"
             android:exported="false" />
         <activity
             android:name=".test.TestActivity"
-            android:exported="false">
+            android:exported="true" >
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".test.basic_code.view.BaseStartActivity"
