@@ -51,9 +51,6 @@ class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
     private lateinit var cameraViewLeft: CameraViewInterface
     private lateinit var cameraViewRight: CameraViewInterface
 
-    private lateinit var previewLeft: Surface
-    private lateinit var previewRight: Surface
-
 
     private lateinit var distanceAnalyzer: DistanceAnalyzer
 
@@ -180,14 +177,12 @@ class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
             if (!handlerL.isEqual(device)) {
                 queueEvent({
                     handlerL.close()
-                    previewLeft.release()
                     setCameraButton()
 
                 }, 0)
             } else if (!handlerR.isEqual(device)) {
                 queueEvent({
                     handlerR.close()
-                    previewRight.release()
                     setCameraButton()
                 }, 0)
             }

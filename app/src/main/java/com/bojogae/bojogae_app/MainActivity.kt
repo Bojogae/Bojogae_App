@@ -20,6 +20,8 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.bojogae.bojogae_app.listener.SensorListener
+import com.bojogae.bojogae_app.utils.AppUtil
+import org.opencv.android.OpenCVLoader
 import java.util.Objects
 
 
@@ -34,6 +36,17 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        if (savedInstanceState == null) {
+            if (!OpenCVLoader.initDebug()) {
+                // opencv를 초기화하고 초기화하지 못하면 앱을 종료
+                Log.d(AppUtil.DEBUG_TAG, "OpenCV Error")
+                finish()
+            } else {
+                Log.d(AppUtil.DEBUG_TAG, "OpenCV Success")
+
+            }
+        }
 
         // 핸드쉐이킹 센서(가속도 센서)
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager

@@ -60,9 +60,7 @@ public class BaseFragment extends Fragment
     private Handler mWorkerHandler;
     private long mWorkerThreadID = -1;
 
-    public BaseFragment() {
-        super();
-    }
+
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
