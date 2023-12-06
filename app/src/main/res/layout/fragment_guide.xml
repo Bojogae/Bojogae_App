@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- 이미지 1 -->
+
+        <!-- 이미지 2 -->
+        <ImageView
+            android:id="@+id/guideMainView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:scaleType="fitXY"
+            android:src="@drawable/main"
+            android:background="#80000000"/>
+
+        <ImageView
+            android:id="@+id/guideSettingView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/setting"
+            android:scaleType="fitXY"
+            android:adjustViewBounds="true"/>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <!-- 말풍선 배경 이미지 -->
+            <ImageView
+                android:id="@+id/balloonImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/balloon_background"
+                android:layout_marginTop="50dp"
+                android:layout_marginLeft="50dp"
+                android:scaleType="fitXY"/>
+
+            <!-- 말풍선에 표시할 텍스트 -->
+            <TextView
+                android:id="@+id/messageTextView"
+                android:layout_width="300dp"
+                android:layout_height="200dp"
+                android:text="Hello, this is a balloon!"
+                android:textColor="#000000"
+                android:layout_marginTop="-800dp"
+                android:layout_marginLeft="70dp"/>
+        </FrameLayout>
+
+        <!-- 추가 이미지들을 원하는 만큼 계속 추가할 수 있습니다. -->
+
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#FFFFFF"/> <!-- 말풍선의 배경색 -->
+    <corners android:radius="8dp"/> <!-- 말풍선의 모서리를 둥글게 만듭니다. -->
+</shape>

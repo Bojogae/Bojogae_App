@@ -21,10 +21,10 @@
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_right" />
         <action
-            android:id="@+id/action_homeFragment_to_settingsFragment"
+            android:id="@+id/home_to_settings"
             app:destination="@id/settingsFragment" />
         <action
-            android:id="@+id/action_homeFragment_to_roadingFragment2"
+            android:id="@+id/home_to_roading"
             app:destination="@id/roadingFragment2" />
     </fragment>
     <fragment

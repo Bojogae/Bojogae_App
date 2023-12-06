@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:paddingLeft="15dp"
             android:paddingRight="15dp"
-            android:text="감지   객체   설정"
+            android:text="감지 객체 설정"
             android:textColor="#FFFFFF"
             android:textSize="50sp"
             android:textStyle="bold" />
