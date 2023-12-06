@@ -14,7 +14,7 @@ import com.serenegiant.usb.UVCCamera
 import com.serenegiant.usb.common.UVCCameraHandler
 import com.serenegiant.usb.widget.CameraViewInterface
 
-class WalkStartViewModel: ViewModel() {
+class WalkStartFragmentViewModel: ViewModel() {
 
 
 

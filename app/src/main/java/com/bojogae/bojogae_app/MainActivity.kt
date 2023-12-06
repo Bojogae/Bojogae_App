@@ -1,29 +1,18 @@
 package com.bojogae.bojogae_app
 
-import android.Manifest
-import android.app.PendingIntent
-import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorManager
-import android.hardware.usb.UsbDevice
-import android.hardware.usb.UsbManager
-import android.os.Build
 import android.os.Bundle
-import android.util.Log
-import androidx.annotation.RequiresApi
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.bojogae.bojogae_app.databinding.ActivityMainBinding
 import com.bojogae.bojogae_app.listener.SensorListener
 import com.bojogae.bojogae_app.utils.AppUtil
-import org.opencv.android.OpenCVLoader
-import java.util.Objects
 
 
 class MainActivity : AppCompatActivity() {
@@ -34,20 +23,25 @@ class MainActivity : AppCompatActivity() {
     private var lastAcceleration = 0f // 최대 가속도
 
     private lateinit var viewBinding: ActivityMainBinding
+    private lateinit var viewModel: MainActivityViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewBinding = ActivityMainBinding.inflate(layoutInflater)
+        viewModel = ViewModelProvider(this)[MainActivityViewModel::class.java]
         setContentView(viewBinding.root)
 
-        if (savedInstanceState == null) {
-            if (AppUtil.initApp()) {
-                AppUtil.ld("Application Bojogae init success!!")
-            } else {
-                AppUtil.ld("Application Bojogae cant't init!")
-                finish()
+        // 뒤로가기 버튼 동작시 메서드
+        onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (viewModel.backPressedTime + 2000 > System.currentTimeMillis()) {
+                    finish()
+                } else {
+                    toast("한번 더 누르면 종료됩니다.")
+                }
+                viewModel.backPressedTime = System.currentTimeMillis()
             }
-        }
+        })
 
         // 핸드쉐이킹 센서(가속도 센서)
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
@@ -75,6 +69,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
+    fun Context.toast( msg: String) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+    }
 
 }

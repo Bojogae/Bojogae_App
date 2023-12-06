@@ -27,7 +27,7 @@ class WalkStartFragment : BaseFragment() {
     private var _viewBinding: FragmentWalkStartBinding? = null
     private val viewBinding get() = _viewBinding!!
 
-    private lateinit var viewModel: WalkStartViewModel
+    private lateinit var viewModel: WalkStartFragmentViewModel
 
     private lateinit var usbMonitor: USBMonitor    // USB 디바이스 연결을 위한 클래스
     private lateinit var deviceList: List<UsbDevice>    // 현재 연결된 USB 디바이스 목록
@@ -56,7 +56,7 @@ class WalkStartFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         _viewBinding = FragmentWalkStartBinding.inflate(layoutInflater)
-        viewModel = ViewModelProvider(requireActivity())[WalkStartViewModel::class.java]
+        viewModel = ViewModelProvider(requireActivity())[WalkStartFragmentViewModel::class.java]
 
         // 모니터 설정
         usbMonitor = viewModel.initUSBMonitor(requireActivity(), onDeviceConnectListener)
