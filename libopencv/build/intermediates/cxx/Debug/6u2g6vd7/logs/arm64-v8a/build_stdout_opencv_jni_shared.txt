@@ -1,2 +1,0 @@
-ninja: Entering directory `C:\Users\ymail\AndroidStudioProjects\Bojogae_App\opencv\.cxx\Debug\6u2g6vd7\arm64-v8a'
-ninja: no work to do.
