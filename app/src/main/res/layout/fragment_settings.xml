@@ -99,18 +99,20 @@
                 android:textColor="@color/white" />
 
             <Spinner
+                android:entries="@array/string_array_devices"
                 android:id="@+id/spinner_discover_device"
                 android:popupBackground="@drawable/shape_round_black_bg_white_stroke"
                 android:background="@drawable/shape_round_black_bg_white_stroke"
                 android:layout_marginTop="20dp"
                 android:layout_width="match_parent"
-                android:paddingVertical="16dp"
+                android:paddingVertical="10dp"
                 android:layout_height="wrap_content" />
 
             <Button
                 android:id="@+id/btn_connect_device"
                 android:background="@drawable/shape_round_black_bg_white_stroke"
-                android:paddingVertical="13dp"
+                android:textColor="@color/shape_button_text_white"
+                android:paddingVertical="15dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 style="@style/setting_item_size20_colorWhite_margin10dp"

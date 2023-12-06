@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/color/button_text_color.xml -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 클릭됐을 때의 텍스트 색상 -->
+    <item android:state_pressed="true" android:color="#000000"/> <!-- 검은색 -->
+    <!-- 기본 텍스트 색상 -->
+    <item android:color="#FFFFFF"/> <!-- 흰색 -->
+</selector>

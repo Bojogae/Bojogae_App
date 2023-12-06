@@ -4,9 +4,9 @@
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
 
-        <item name="colorPrimary">#FF5722</item>
-        <item name="colorPrimaryDark">#E88363</item>
-        <item name="colorAccent">#FF6822</item>
+        <item name="colorPrimary">#C9C9C9</item>
+        <item name="colorPrimaryDark">#E1E1E1</item>
+        <item name="colorAccent">#C8C8C8</item>
     </style>
 
     <style name="Theme.FaceDetectDistanceOpenCVUVC" parent="Base.Theme.FaceDetectDistanceOpenCVUVC" />

@@ -1,8 +1,9 @@
 <resources>
-    <string-array name="your_array">
+    <string-array name="string_array_devices">
         <item>안경</item>
         <item>자동차</item>
         <item>안경, 자동차</item>
+
     </string-array>
     <!-- Reply Preference -->
     <string-array name="reply_entries">
