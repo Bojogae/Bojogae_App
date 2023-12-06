@@ -13,6 +13,7 @@ import androidx.core.view.drawToBitmap
 import com.bojogae.bojogae_app.R
 import com.bojogae.bojogae_app.analyzer.DistanceAnalyzer
 import com.bojogae.bojogae_app.databinding.ActivityObjectDistanceBinding
+import com.bojogae.bojogae_app.listener.OnCameraDistanceListener
 import com.bojogae.bojogae_app.utils.AppUtil
 import com.serenegiant.usb.CameraDialog
 import com.serenegiant.usb.CameraDialog.CameraDialogParent
@@ -69,7 +70,12 @@ class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
         }
 
 
-        distanceAnalyzer = DistanceAnalyzer(this)
+        distanceAnalyzer = DistanceAnalyzer(this, object : OnCameraDistanceListener {
+            override fun onDistanceCallback(distance: Double, type: String) {
+                AppUtil.ld("$type distance is $distance")
+            }
+
+        })
 
         cameraViewLeft = viewBinding.cameraViewLeft
         cameraViewLeft.aspectRatio = (AppUtil.DEFAULT_WIDTH / AppUtil.DEFAULT_HEIGHT.toFloat()).toDouble()

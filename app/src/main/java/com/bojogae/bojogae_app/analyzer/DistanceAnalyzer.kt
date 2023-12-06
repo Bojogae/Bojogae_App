@@ -7,6 +7,7 @@ import android.view.TextureView
 import android.widget.ImageView
 import androidx.core.view.drawToBitmap
 import com.bojogae.bojogae_app.R
+import com.bojogae.bojogae_app.listener.OnCameraDistanceListener
 import com.bojogae.bojogae_app.test.tensorflow_lite.midas.DrawingOverlay
 import com.bojogae.bojogae_app.utils.AppUtil
 import com.serenegiant.usb.IFrameCallback
@@ -36,7 +37,7 @@ import java.nio.ByteBuffer
 import kotlin.math.pow
 
 
-class DistanceAnalyzer(val context: Context) : CoroutineScope {
+class DistanceAnalyzer(val context: Context, private val onCameraDistanceListener: OnCameraDistanceListener) : CoroutineScope {
     override val coroutineContext = Dispatchers.Default + Job()
 
     private var initFinished = false
@@ -61,7 +62,6 @@ class DistanceAnalyzer(val context: Context) : CoroutineScope {
     }
 
 
-
     val iFrameLeftCallback = IFrameCallback {
         leftBuffer = it
         syncListener.onSyncSuccess()
@@ -78,9 +78,7 @@ class DistanceAnalyzer(val context: Context) : CoroutineScope {
     }
 
 
-    interface OnResultListener {
-        fun onResult(leftBitmap: Bitmap, rightBitmap: Bitmap)
-    }
+
 
     interface OnCalibrateFinished {
         fun onSuccess()
@@ -92,7 +90,7 @@ class DistanceAnalyzer(val context: Context) : CoroutineScope {
         }
     }
 
-    var resultListener: OnResultListener? = null
+
 
     init {
         val inputStream = context.resources.openRawResource(R.raw.haarcascade_frontalface_default)
@@ -156,10 +154,11 @@ class DistanceAnalyzer(val context: Context) : CoroutineScope {
             val faceCenterY = rect.y + rect.height / 2
 
             Imgproc.rectangle(rgbLeftMat, rect, Scalar(0.0, 255.0, 0.0), 3)
-            val distance = faceDistance(faceCenterX, faceCenterY, disparityMat).toString()
-
+            val distance = faceDistance(faceCenterX, faceCenterY, disparityMat)
             Imgproc.putText(rgbLeftMat, "$distance m", Point(rect.x.toDouble(), (rect.y - 10).toDouble()),
                 Imgproc.FONT_HERSHEY_SIMPLEX, 0.9, Scalar(255.0, 0.0, 0.0, 255.0), 2)
+
+            onCameraDistanceListener.onDistanceCallback(distance, "Face") // 반환
         }
 
         val filteredMap = DisparityMapProcessor.calFilteredMap(greyLeftMat, greyRightMat)
