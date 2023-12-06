@@ -64,6 +64,7 @@ public class BaseActivity extends AppCompatActivity
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         // ワーカースレッドを生成
         if (mWorkerHandler == null) {
             mWorkerHandler = HandlerThreadHandler.createHandler(TAG);

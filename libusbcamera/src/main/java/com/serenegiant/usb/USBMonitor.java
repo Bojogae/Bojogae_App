@@ -643,9 +643,7 @@ public final class USBMonitor {
 				} else {
 					createNew = false;
 				}
-				if (mOnDeviceConnectListener != null) {
-					mOnDeviceConnectListener.onConnect(device, ctrlBlock, createNew);
-				}
+				mOnDeviceConnectListener.onConnect(device, ctrlBlock, createNew);
 			}
 		});
 	}

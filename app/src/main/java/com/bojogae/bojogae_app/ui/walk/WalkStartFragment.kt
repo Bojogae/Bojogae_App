@@ -2,28 +2,24 @@ package com.bojogae.bojogae_app.ui.walk
 
 import android.hardware.usb.UsbDevice
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.Surface
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
-import com.bojogae.bojogae_app.R
 import com.bojogae.bojogae_app.analyzer.DistanceAnalyzer
 import com.bojogae.bojogae_app.databinding.FragmentWalkStartBinding
-import com.bojogae.bojogae_app.test.ObjectDistanceActivity
 import com.bojogae.bojogae_app.utils.AppUtil
 import com.github.jiangdongguo.R.*
 import com.serenegiant.usb.DeviceFilter
 import com.serenegiant.usb.USBMonitor
 import com.serenegiant.usb.UVCCamera
+import com.serenegiant.usb.common.BaseFragment
 import com.serenegiant.usb.common.UVCCameraHandler
 import com.serenegiant.usb.widget.CameraViewInterface
-import com.serenegiant.usb.widget.UVCCameraTextureView
+import com.serenegiant.utils.HandlerThreadHandler
 import com.serenegiant.utils.ThreadPool.queueEvent
 
 /**
@@ -32,7 +28,7 @@ import com.serenegiant.utils.ThreadPool.queueEvent
  * - 음성 안내
  * - 종료 버튼
  */
-class WalkStartFragment : Fragment() {
+class WalkStartFragment : BaseFragment() {
 
     private var _viewBinding: FragmentWalkStartBinding? = null
     private val viewBinding get() = _viewBinding!!
@@ -48,8 +44,9 @@ class WalkStartFragment : Fragment() {
     private lateinit var handlerL: UVCCameraHandler
     private lateinit var handlerR: UVCCameraHandler
 
-
     private lateinit var distanceAnalyzer: DistanceAnalyzer
+
+    private var flag = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -60,6 +57,10 @@ class WalkStartFragment : Fragment() {
         viewModel = ViewModelProvider(requireActivity())[WalkStartViewModel::class.java]
         viewModel?.initDistanceAnalyzer(requireContext())   // 거리 측정 분석기 초기화
 
+        // 거리 측정기
+        distanceAnalyzer = DistanceAnalyzer(requireContext())
+
+
 
         // 카메라 뷰 설정
         cameraViewLeft = viewBinding.cameraViewLeft
@@ -67,12 +68,13 @@ class WalkStartFragment : Fragment() {
         cameraViewRight = viewBinding.cameraViewRight
         cameraViewRight.aspectRatio = (AppUtil.DEFAULT_WIDTH / AppUtil.DEFAULT_HEIGHT.toFloat()).toDouble()
 
+
+
         // 카메라 핸들러 설정
         handlerL = UVCCameraHandler.createHandler(requireActivity(), cameraViewLeft, 2,
             AppUtil.DEFAULT_WIDTH, AppUtil.DEFAULT_HEIGHT, UVCCamera.PIXEL_FORMAT_RGB565)
         handlerR = UVCCameraHandler.createHandler(requireActivity(), cameraViewRight, 2,
             AppUtil.DEFAULT_WIDTH, AppUtil.DEFAULT_HEIGHT, UVCCamera.PIXEL_FORMAT_RGB565)
-
 
         // usb device 관리 모니터
         usbMonitor = USBMonitor(requireContext(), mOnDeviceConnectListener)
@@ -80,17 +82,46 @@ class WalkStartFragment : Fragment() {
 
         // 디바이스 필터
         val filter = DeviceFilter.getDeviceFilters(requireContext(), xml.device_filter)
+
+        // 카메라 디바이스만 걸러진 디바이스 리스트
         val deviceList = usbMonitor.getDeviceList(filter[0])
 
 
-        viewBinding.fabCameraDebug.setOnClickListener {
-            deviceList.forEach { device ->
+        viewBinding.fabCameraDebug1.setOnClickListener {
+            if (!handlerL.isOpened) {
+                val device = deviceList[0]
                 usbMonitor.requestPermission(device)
-                AppUtil.ld("카메라 필터로 걸려진 디바이스")
+                AppUtil.ld("카메라 필터로 걸려진 디바이스 1")
                 AppUtil.ld(device.deviceId.toString())
-
             }
         }
+
+        viewBinding.fabCameraDebug2.setOnClickListener {
+            if (!handlerR.isOpened) {
+                val device = deviceList[1]
+                usbMonitor.requestPermission(device)
+                AppUtil.ld("카메라 필터로 걸려진 디바이스 2")
+                AppUtil.ld(device.deviceId.toString())
+            }
+        }
+
+        viewBinding.fabChangeDebug.setOnClickListener {
+            if (!flag) {
+                viewBinding.clDebugView.visibility = View.INVISIBLE
+            } else {
+                viewBinding.clDebugView.visibility = View.VISIBLE
+            }
+
+            flag = !flag
+
+        }
+
+        distanceAnalyzer.disparityView = viewBinding.disparityMap
+        distanceAnalyzer.disparityView.setWillNotDraw(false)
+
+
+        distanceAnalyzer.resultView = viewBinding.objectDetect
+        distanceAnalyzer.resultView.setWillNotDraw(false)
 
 
         AppUtil.ld("on create view")
@@ -132,13 +163,13 @@ class WalkStartFragment : Fragment() {
             if (!handlerL.isOpened) {
                 handlerL.open(ctrlBlock)
                 val st = cameraViewLeft.surfaceTexture
-                // handlerL.setPreviewCallback(distanceAnalyzer.iFrameLeftCallback)
+                handlerL.setPreviewCallback(distanceAnalyzer.iFrameLeftCallback)
                 handlerL.startPreview(Surface(st))
 
             } else if (!handlerR.isOpened) {
                 handlerR.open(ctrlBlock)
                 val st = cameraViewRight.surfaceTexture
-                // handlerR.setPreviewCallback(distanceAnalyzer.iFrameRightCallback)
+                handlerR.setPreviewCallback(distanceAnalyzer.iFrameRightCallback)
                 handlerR.startPreview(Surface(st))
             }
         }
@@ -146,13 +177,13 @@ class WalkStartFragment : Fragment() {
         override fun onDisconnect(device: UsbDevice, ctrlBlock: USBMonitor.UsbControlBlock) {
             AppUtil.ld("디바이스 연결 해제됨")
             if (!handlerL.isEqual(device)) {
-                queueEvent {
+                queueEvent({
                     handlerL.close()
-                }
+                }, 0)
             } else if (!handlerR.isEqual(device)) {
-                queueEvent {
+                queueEvent({
                     handlerR.close()
-                }
+                }, 0)
             }
         }
 
