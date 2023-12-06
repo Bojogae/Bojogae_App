@@ -16,18 +16,6 @@ object AppUtil {
         Log.d(DEBUG_TAG, message)
     }
 
-    fun initApp() : Boolean {
-        if (!OpenCVLoader.initDebug()) {
-            Log.d(DEBUG_TAG, "OpenCV Error")    // opencv를 초기화하고 초기화하지 못하면 앱을 종료
-            return false
-        } else {
-            Log.d(DEBUG_TAG, "OpenCV Success")
-
-
-
-        }
-        return true
-    }
 }
 
 

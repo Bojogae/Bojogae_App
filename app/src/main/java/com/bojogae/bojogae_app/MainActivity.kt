@@ -13,6 +13,7 @@ import androidx.navigation.findNavController
 import com.bojogae.bojogae_app.databinding.ActivityMainBinding
 import com.bojogae.bojogae_app.listener.SensorListener
 import com.bojogae.bojogae_app.utils.AppUtil
+import com.bojogae.bojogae_app.utils.toast
 
 
 class MainActivity : AppCompatActivity() {
@@ -69,8 +70,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun Context.toast( msg: String) {
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
-    }
+
 
 }
