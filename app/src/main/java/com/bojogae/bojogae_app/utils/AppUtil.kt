@@ -1,6 +1,7 @@
 package com.bojogae.bojogae_app.utils
 
 import android.util.Log
+import org.opencv.android.OpenCVLoader
 
 object AppUtil {
     const val DEBUG_TAG = "test_device"
@@ -12,7 +13,20 @@ object AppUtil {
     }
 
     fun ld(message: String) {
-        Log.d(AppUtil.DEBUG_TAG, message)
+        Log.d(DEBUG_TAG, message)
+    }
+
+    fun initApp() : Boolean {
+        if (!OpenCVLoader.initDebug()) {
+            Log.d(DEBUG_TAG, "OpenCV Error")    // opencv를 초기화하고 초기화하지 못하면 앱을 종료
+            return false
+        } else {
+            Log.d(DEBUG_TAG, "OpenCV Success")
+
+
+
+        }
+        return true
     }
 }
 

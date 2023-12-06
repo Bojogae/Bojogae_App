@@ -26,30 +26,26 @@ class HomeFragment : Fragment() {
         _viewBinding = FragmentHomeBinding.inflate(layoutInflater)
 
 
-
-
-        val walkStartBtn = viewBinding.btnStartWalk
-
-
-
-        val guideBtn = viewBinding.btnGuide
-        val settingsBtn = viewBinding.btnSetting
-
-
-
-        walkStartBtn.setOnClickListener{
-            val action = HomeFragmentDirections.homeToWalkStart()
+        viewBinding.btnStartWalk.setOnClickListener{
+            val action = HomeFragmentDirections.actionHomeFragmentToWalkStartFragment()
             findNavController().navigate(action)
         }
 
-        guideBtn.setOnClickListener{
-            findNavController().navigate(R.id.home_to_guide)
+        viewBinding.btnGuide.setOnClickListener{
+            val action = HomeFragmentDirections.actionHomeFragmentToGuideFragment()
+            findNavController().navigate(action)
         }
 
-        settingsBtn.setOnClickListener {
-            findNavController().navigate(R.id.home_to_setting)
+        viewBinding.btnSetting.setOnClickListener {
+            val action = HomeFragmentDirections.actionHomeFragmentToSettingsFragment()
+            findNavController().navigate(action)
         }
 
         return viewBinding.root
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _viewBinding = null
     }
 }

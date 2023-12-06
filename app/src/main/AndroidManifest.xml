@@ -2,9 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-
     <uses-feature android:name="android.hardware.sensor.accelerometer" /> <!-- 가속도계 센서 : 진동, 운동가속 감지 기능 -->
-
     <!-- all version -->
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" /> <!-- min sdk version is 33 -->
@@ -50,6 +48,9 @@
         android:theme="@style/Theme.FaceDetectDistanceOpenCVUVC"
         tools:targetApi="31">
         <activity
+            android:name=".ui.splash.LoadingActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
@@ -69,7 +70,7 @@
         </activity>
         <activity
             android:name=".test.MultikTestActivity"
-            android:exported="false"></activity>
+            android:exported="false" />
         <activity
             android:name=".test.ObjectDistanceActivity"
             android:exported="true"
@@ -96,7 +97,7 @@
         <activity
             android:name=".test.basic_code.view.BaseStartActivity"
             android:exported="false"
-            android:screenOrientation="fullSensor"></activity>
+            android:screenOrientation="fullSensor" />
         <activity
             android:name=".test.basic_code.view.USBCameraActivity"
             android:exported="false"

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/white"
+    tools:context=".ui.splash.SplashFragment">
+
+    <TextView
+        android:layout_marginBottom="300dp"
+        android:id="@+id/tv_splash_title"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@drawable/roading"
+        android:gravity="center"
+        android:text="BOJO\nGAE"
+        android:textColor="#FFCDE3"
+        android:textSize="47sp"
+        android:textStyle="bold"/>
+
+    <ImageView
+        android:layout_marginTop="20dp"
+        android:id="@+id/tv_splash_title_image"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:padding="65dp"
+        android:src="@drawable/bg_app_splash_visually_impaired"
+        app:layout_constraintBottom_toTopOf="@id/tv_app_version"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_splash_title" />
+
+    <TextView
+        android:textColor="@color/light_gray_3"
+        android:fontFamily="@font/font_gwe_bold"
+        android:id="@+id/tv_app_version"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/app_version"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:gravity="center"
+        android:layout_marginBottom="30dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
+import com.bojogae.bojogae_app.databinding.ActivityMainBinding
 import com.bojogae.bojogae_app.listener.SensorListener
 import com.bojogae.bojogae_app.utils.AppUtil
 import org.opencv.android.OpenCVLoader
@@ -32,19 +33,19 @@ class MainActivity : AppCompatActivity() {
     private var currentAcceleration = 0f // 현재 가속도
     private var lastAcceleration = 0f // 최대 가속도
 
+    private lateinit var viewBinding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        viewBinding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(viewBinding.root)
 
         if (savedInstanceState == null) {
-            if (!OpenCVLoader.initDebug()) {
-                // opencv를 초기화하고 초기화하지 못하면 앱을 종료
-                Log.d(AppUtil.DEBUG_TAG, "OpenCV Error")
-                finish()
+            if (AppUtil.initApp()) {
+                AppUtil.ld("Application Bojogae init success!!")
             } else {
-                Log.d(AppUtil.DEBUG_TAG, "OpenCV Success")
-
+                AppUtil.ld("Application Bojogae cant't init!")
+                finish()
             }
         }
 
@@ -62,9 +63,6 @@ class MainActivity : AppCompatActivity() {
             it.registerListener(listener,
                 it.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION),SensorManager.SENSOR_DELAY_NORMAL)
         }
-
-
-
     }
 
     private fun navigateToNewFragment() {
@@ -72,11 +70,11 @@ class MainActivity : AppCompatActivity() {
 
         // 프래그먼트마다의 핸드쉐이크 기능 구분
         when (navController.currentDestination?.id) {
-            R.id.homeFragment -> navController.navigate(R.id.home_to_walk_start)
-            R.id.walkStartFragment -> navController.navigate(R.id.walk_start_to_home)
+            R.id.homeFragment -> navController.navigate(R.id.action_homeFragment_to_walkStartFragment)
+            R.id.walkStartFragment -> navController.navigate(R.id.action_walkStartFragment_to_homeFragment)
         }
-
     }
+
 
 
 }
