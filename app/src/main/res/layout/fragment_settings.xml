@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000"
+    tools:context=".ui.setting.SettingsFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#000000"
+        tools:context=".ui.setting.SettingsFragment">
+
+        <LinearLayout
+            android:paddingVertical="10dp"
+            android:paddingHorizontal="20dp"
+            android:orientation="vertical"
+            android:id="@+id/ll_object_detect_setting"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:textStyle="bold"
+                android:layout_marginTop="10dp"
+                android:maxLines="1"
+                android:textSize="30sp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableRight="@drawable/ic_glasses_white"
+                android:layout_marginEnd="13dp"
+                android:text="객체 감지 목록 설정"
+                android:textColor="@color/white" />
+
+            <View
+                android:layout_marginTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="#FFFFFF" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/sc_detect_object_car"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="자동차"
+                style="@style/setting_item_size25_colorWhite_margin10dp"/>
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/sc_detect_object_kick_board"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="킥보드"
+                style="@style/setting_item_size25_colorWhite_margin10dp"/>
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/sc_detect_object_stair"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="계단"
+                style="@style/setting_item_size25_colorWhite_margin10dp"/>
+
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/sc_detect_object_human"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="사람"
+                style="@style/setting_item_size25_colorWhite_margin10dp"/>
+
+            <View
+                android:layout_marginTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="#FFFFFF" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_current_detect_state"
+            android:layout_marginTop="10dp"
+            android:paddingVertical="10dp"
+            android:paddingHorizontal="20dp"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@id/ll_object_detect_setting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:textStyle="bold"
+                android:maxLines="1"
+                android:textSize="30sp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableRight="@drawable/ic_camera_white"
+                android:layout_marginEnd="13dp"
+                android:text="현재 감지 수단"
+                android:textColor="@color/white" />
+
+            <Spinner
+                android:entries="@array/string_array_devices"
+                android:id="@+id/spinner_discover_device"
+                android:popupBackground="@drawable/shape_round_black_bg_white_stroke"
+                android:background="@drawable/shape_round_black_bg_white_stroke"
+                android:layout_marginTop="20dp"
+                android:layout_width="match_parent"
+                android:paddingVertical="10dp"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/btn_connect_device"
+                android:background="@drawable/shape_round_black_bg_white_stroke"
+                android:textColor="@color/shape_button_text_white"
+                android:paddingVertical="15dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/setting_item_size20_colorWhite_margin10dp"
+                android:text="장치 연결 설정" />
+
+
+            <View
+                android:layout_marginTop="30dp"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="#FFFFFF" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="50dp"
+            android:layout_marginTop="10dp"
+            android:paddingVertical="10dp"
+            android:paddingHorizontal="20dp"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@id/ll_current_detect_state"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:textStyle="bold"
+                android:maxLines="1"
+                android:textSize="30sp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableRight="@drawable/ic_smart_phone_white"
+                android:layout_marginEnd="13dp"
+                android:text="동작 설정"
+                android:textColor="@color/white" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/sc_shake_control"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="흔들어서 화면 이동"
+                style="@style/setting_item_size25_colorWhite_margin10dp"/>
+
+
+        </LinearLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>

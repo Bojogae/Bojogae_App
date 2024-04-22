@@ -1,15 +1,19 @@
 package com.bojogae.bojogae_app.test
 
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Canvas
 import android.hardware.usb.UsbDevice
 import android.os.Bundle
 import android.util.Log
 import android.view.Surface
 import android.view.View.OnClickListener
 import android.widget.Toast
+import androidx.core.view.drawToBitmap
 import com.bojogae.bojogae_app.R
 import com.bojogae.bojogae_app.analyzer.DistanceAnalyzer
 import com.bojogae.bojogae_app.databinding.ActivityObjectDistanceBinding
+import com.bojogae.bojogae_app.listener.OnCameraDistanceListener
 import com.bojogae.bojogae_app.utils.AppUtil
 import com.serenegiant.usb.CameraDialog
 import com.serenegiant.usb.CameraDialog.CameraDialogParent
@@ -21,6 +25,17 @@ import com.serenegiant.usb.common.UVCCameraHandler
 import com.serenegiant.usb.widget.CameraViewInterface
 import com.serenegiant.usb.widget.UVCCameraTextureView
 import org.opencv.android.OpenCVLoader
+import org.opencv.android.Utils
+import org.opencv.calib3d.Calib3d
+import org.opencv.calib3d.StereoSGBM
+import org.opencv.core.CvType
+import org.opencv.core.Mat
+import org.opencv.core.MatOfPoint2f
+import org.opencv.core.Rect
+import org.opencv.core.Size
+import org.opencv.core.TermCriteria
+import org.opencv.imgproc.Imgproc
+import kotlin.math.pow
 
 class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
 
@@ -37,10 +52,6 @@ class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
     private lateinit var cameraViewLeft: CameraViewInterface
     private lateinit var cameraViewRight: CameraViewInterface
 
-    private lateinit var previewLeft: Surface
-    private lateinit var previewRight: Surface
-
-
 
     private lateinit var distanceAnalyzer: DistanceAnalyzer
 
@@ -53,17 +64,18 @@ class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
 
         if (!OpenCVLoader.initDebug()) {
             Log.d(AppUtil.DEBUG_TAG, "OpenCV Error")
+        } else {
+            Log.d(AppUtil.DEBUG_TAG, "OpenCV Success")
+
         }
 
-        distanceAnalyzer = DistanceAnalyzer(this)
-        distanceAnalyzer.resultListener = object : DistanceAnalyzer.OnResultListener {
-            override fun onResult(leftBitmap: Bitmap, rightBitmap: Bitmap) {
-                runOnUiThread {
-                    viewBinding.cameraViewResultLeft.setImageBitmap(leftBitmap)
-                    viewBinding.cameraViewResultRight.setImageBitmap(rightBitmap)
-                }
+
+        distanceAnalyzer = DistanceAnalyzer(this, object : OnCameraDistanceListener {
+            override fun onDistanceCallback(distance: Double, type: String) {
+                AppUtil.ld("$type distance is $distance")
             }
-        }
+
+        })
 
         cameraViewLeft = viewBinding.cameraViewLeft
         cameraViewLeft.aspectRatio = (AppUtil.DEFAULT_WIDTH / AppUtil.DEFAULT_HEIGHT.toFloat()).toDouble()
@@ -87,8 +99,12 @@ class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
 
         Log.d(AppUtil.DEBUG_TAG, "oncreate")
 
-        distanceAnalyzer.runAnalyze()
+        distanceAnalyzer.disparityView = viewBinding.disparityMap
+        distanceAnalyzer.disparityView.setWillNotDraw(false)
 
+
+        distanceAnalyzer.resultView = viewBinding.objectDetect
+        distanceAnalyzer.resultView.setWillNotDraw(false)
     }
 
     override fun onStart() {
@@ -158,6 +174,7 @@ class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
                 handlerR.setPreviewCallback(distanceAnalyzer.iFrameRightCallback)
                 handlerR.startPreview(Surface(st))
 
+
             }
         }
 
@@ -166,14 +183,12 @@ class ObjectDistanceActivity : BaseActivity(), CameraDialogParent {
             if (!handlerL.isEqual(device)) {
                 queueEvent({
                     handlerL.close()
-                    previewLeft.release()
                     setCameraButton()
 
                 }, 0)
             } else if (!handlerR.isEqual(device)) {
                 queueEvent({
                     handlerR.close()
-                    previewRight.release()
                     setCameraButton()
                 }, 0)
             }

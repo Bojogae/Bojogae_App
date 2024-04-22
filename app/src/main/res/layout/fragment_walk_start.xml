@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ui.walk.WalkStartFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_main_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_debug_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <com.serenegiant.usb.widget.UVCCameraTextureView
+            android:layout_gravity="center"
+            android:id="@+id/camera_view_left"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/disparity_map"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/camera_view_right" />
+
+        <com.serenegiant.usb.widget.UVCCameraTextureView
+            android:layout_gravity="center"
+            android:id="@+id/camera_view_right"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/object_detect"
+            app:layout_constraintStart_toEndOf="@id/camera_view_left"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <ImageView
+            android:scaleType="fitXY"
+            android:layout_gravity="center"
+            android:id="@+id/disparity_map"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@id/camera_view_left"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/object_detect" />
+
+        <ImageView
+            android:scaleType="fitXY"
+
+            android:layout_gravity="center"
+            android:id="@+id/object_detect"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@id/camera_view_right"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/disparity_map"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_change_debug"
+        app:fabSize="auto"
+        app:fabCustomSize="55dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/fab_camera_debug1"
+        app:backgroundTint="@color/TRANSPARENT"
+        android:layout_margin="30dp"
+        android:src="@drawable/ic_debug_white"
+        android:backgroundTint="@color/TEAL_500_A060" />
+
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_camera_debug1"
+        app:fabSize="auto"
+        app:fabCustomSize="55dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/fab_camera_debug2"
+        app:backgroundTint="@color/TRANSPARENT"
+        android:layout_margin="30dp"
+        android:src="@drawable/ic_camera_white"
+        android:backgroundTint="@color/TEAL_500_A060" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_camera_debug2"
+        app:fabSize="auto"
+        app:fabCustomSize="55dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:backgroundTint="@color/TRANSPARENT"
+        android:layout_margin="30dp"
+        android:src="@drawable/ic_camera_white"
+        android:backgroundTint="@color/TEAL_500_A060" />
+
+
+
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
