@@ -36,11 +36,13 @@ class CalibrationActivity : AppCompatActivity(), CameraBridgeViewBase.CvCameraVi
                     cameraView.enableView()
                 }
                 else -> {
+
                 }
             }
         }
 
         override fun onPackageInstall(operation: Int, callback: InstallCallbackInterface?) {
+
             // Handle package installation
         }
     }
@@ -49,6 +51,7 @@ class CalibrationActivity : AppCompatActivity(), CameraBridgeViewBase.CvCameraVi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_calibration)
+
 
         // Camera initialization
         cameraView = findViewById(R.id.camera_view)
@@ -64,7 +67,6 @@ class CalibrationActivity : AppCompatActivity(), CameraBridgeViewBase.CvCameraVi
             override fun onClearTranslation(view: View): Boolean {
                 TODO("Not yet implemented")
             }
-
         })
 
         // OpenCV initialization
@@ -73,8 +75,6 @@ class CalibrationActivity : AppCompatActivity(), CameraBridgeViewBase.CvCameraVi
 
         grayR = Mat()
         cornersR = MatOfPoint2f()
-
-
 
 
     }
