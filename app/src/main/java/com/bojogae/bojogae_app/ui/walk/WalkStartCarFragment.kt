@@ -71,9 +71,8 @@ class WalkStartCarFragment : BaseFragment() {
 
     private fun stopAnimations() {
         for (animator in animators) {
-            viewBinding.tvMode.text = "주행 정지"
             viewModel.setDriveState(DriveState.PAUSE)
-            viewBinding.btnDriveState.text = "주행 시작"
+            viewBinding.btnDriveState.text = "주행 정지"
             animator.cancel()
         }
     }
@@ -81,15 +80,13 @@ class WalkStartCarFragment : BaseFragment() {
     private fun startAnimations() {
         for (animator in animators) {
             if (animator.isPaused) {
-                viewBinding.tvMode.text = "주행 중"
                 viewModel.setDriveState(DriveState.RUNNING)
-                viewBinding.btnDriveState.text = "주행 정지"
+                viewBinding.btnDriveState.text = "주행 중"
                 animator.resume()
             } else {
                 animator.start()
-                viewBinding.tvMode.text = "주행 중"
                 viewModel.setDriveState(DriveState.RUNNING)
-                viewBinding.btnDriveState.text = "주행 정지"
+                viewBinding.btnDriveState.text = "주행 중"
             }
         }
     }
