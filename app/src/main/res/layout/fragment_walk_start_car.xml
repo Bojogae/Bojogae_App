@@ -18,9 +18,9 @@
             android:layout_height="150dp"
             android:background="@drawable/circle_shape2"
             android:text="주행중"
+            android:textColor="@color/black"
             android:textSize="24sp"
             android:textStyle="bold"
-            android:textColor="@color/white"
             android:layout_gravity="center"/>
     </FrameLayout>
 

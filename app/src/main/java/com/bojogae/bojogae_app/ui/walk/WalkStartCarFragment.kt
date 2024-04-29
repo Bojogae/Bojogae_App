@@ -101,7 +101,7 @@ class WalkStartCarFragment : BaseFragment() {
                 circle, "translationX", "translationY",
                 getPath(radius.toFloat(), angle)
             )
-            animation.setDuration(3000)
+            animation.setDuration(2000)
             animation.repeatCount = ValueAnimator.INFINITE
             animation.interpolator = LinearInterpolator()
             animators.add(animation)
