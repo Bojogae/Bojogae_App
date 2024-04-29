@@ -27,8 +27,13 @@
             app:destination="@id/guideFragment" />
 
         <action
-            android:id="@+id/action_homeFragment_to_walkStartFragment"
-            app:destination="@id/walkStartFragment" />
+            android:id="@+id/action_homeFragment_to_walkStartPhoneFragment"
+            app:destination="@id/walkStartPhoneFragment" />
+
+        <action
+            android:id="@+id/action_homeFragment_to_walkStartCarFragment"
+            app:destination="@id/walkStartCarFragment" />
+
         <action
             android:id="@+id/action_homeFragment_to_settingsFragment"
             app:destination="@id/settingsFragment" />
@@ -46,14 +51,24 @@
 
 
     <fragment
-        android:id="@+id/walkStartFragment"
-        android:name="com.bojogae.bojogae_app.ui.walk.WalkStartFragment"
+        android:id="@+id/walkStartPhoneFragment"
+        android:name="com.bojogae.bojogae_app.ui.walk.WalkStartPhoneFragment"
         android:label="fragment_walk_start"
-        tools:layout="@layout/fragment_walk_start" >
+        tools:layout="@layout/fragment_walk_start_phone" >
         <action
-            android:id="@+id/action_walkStartFragment_to_homeFragment"
+            android:id="@+id/action_walkStartPhoneFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/walkStartCarFragment"
+        android:name="com.bojogae.bojogae_app.ui.walk.WalkStartCarFragment"
+        android:label="fragment_walk_start"
+        tools:layout="@layout/fragment_walk_start_car" >
+        <action
+            android:id="@+id/action_walkStartCarFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
+
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.bojogae.bojogae_app.ui.setting.SettingsFragment"

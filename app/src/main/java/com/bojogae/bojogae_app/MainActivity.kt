@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.bojogae.bojogae_app.databinding.ActivityMainBinding
+import com.bojogae.bojogae_app.dto.DriveMode
 import com.bojogae.bojogae_app.listener.SensorListener
 import com.bojogae.bojogae_app.utils.AppUtil
 import com.bojogae.bojogae_app.utils.toast
@@ -65,8 +66,25 @@ class MainActivity : AppCompatActivity() {
 
         // 프래그먼트마다의 핸드쉐이크 기능 구분
         when (navController.currentDestination?.id) {
-            R.id.homeFragment -> navController.navigate(R.id.action_homeFragment_to_walkStartFragment)
-            R.id.walkStartFragment -> navController.navigate(R.id.action_walkStartFragment_to_homeFragment)
+            R.id.homeFragment -> {
+                when(viewModel.driveMode.value){
+                    DriveMode.PHONE -> {
+                        navController.navigate(R.id.action_homeFragment_to_walkStartPhoneFragment)
+
+                    }
+                    DriveMode.ROBOT_CAR -> {
+                        navController.navigate(R.id.action_homeFragment_to_walkStartCarFragment)
+
+                    }
+                    else -> {
+                        viewModel.setDriveMode(DriveMode.ROBOT_CAR)
+                        Toast.makeText(this,"기본 주행 모드를 CAR로 설정합니다",Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+
+            }
+            R.id.walkStartCarFragment -> navController.navigate(R.id.action_walkStartCarFragment_to_homeFragment)
         }
     }
 

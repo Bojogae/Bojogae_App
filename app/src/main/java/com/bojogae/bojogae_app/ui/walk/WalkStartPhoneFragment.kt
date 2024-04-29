@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import com.bojogae.bojogae_app.analyzer.DistanceAnalyzer
-import com.bojogae.bojogae_app.databinding.FragmentWalkStartBinding
+import com.bojogae.bojogae_app.databinding.FragmentWalkStartPhoneBinding
 import com.bojogae.bojogae_app.listener.OnCameraDistanceListener
 import com.bojogae.bojogae_app.utils.AppUtil
 import com.serenegiant.usb.USBMonitor
@@ -22,12 +22,12 @@ import com.serenegiant.usb.widget.CameraViewInterface
  * - 음성 안내
  * - 종료 버튼
  */
-class WalkStartFragment : BaseFragment() {
+class WalkStartPhoneFragment : BaseFragment() {
 
-    private var _viewBinding: FragmentWalkStartBinding? = null
+    private var _viewBinding: FragmentWalkStartPhoneBinding? = null
     private val viewBinding get() = _viewBinding!!
 
-    private lateinit var viewModel: WalkStartFragmentViewModel
+    private lateinit var viewModel: WalkStartPhoneFragmentViewModel
 
     private lateinit var usbMonitor: USBMonitor    // USB 디바이스 연결을 위한 클래스
     private lateinit var deviceList: List<UsbDevice>    // 현재 연결된 USB 디바이스 목록
@@ -55,8 +55,8 @@ class WalkStartFragment : BaseFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _viewBinding = FragmentWalkStartBinding.inflate(layoutInflater)
-        viewModel = ViewModelProvider(requireActivity())[WalkStartFragmentViewModel::class.java]
+        _viewBinding = FragmentWalkStartPhoneBinding.inflate(layoutInflater)
+        viewModel = ViewModelProvider(requireActivity())[WalkStartPhoneFragmentViewModel::class.java]
 
         // 모니터 설정
         usbMonitor = viewModel.initUSBMonitor(requireActivity(), onDeviceConnectListener)

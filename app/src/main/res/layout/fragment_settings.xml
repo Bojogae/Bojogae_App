@@ -31,7 +31,7 @@
                 android:layout_height="wrap_content"
                 android:drawableRight="@drawable/ic_glasses_white"
                 android:layout_marginEnd="13dp"
-                android:text="객체 감지 목록 설정"
+                android:text="주행 모드 설정"
                 android:textColor="@color/white" />
 
             <View
@@ -41,33 +41,12 @@
                 android:background="#FFFFFF" />
 
             <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/sc_detect_object_car"
+                android:id="@+id/sc_drive_mode"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="자동차"
+                android:text="로봇카 ↔ 스마트폰"
                 style="@style/setting_item_size25_colorWhite_margin10dp"/>
 
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/sc_detect_object_kick_board"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="킥보드"
-                style="@style/setting_item_size25_colorWhite_margin10dp"/>
-
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/sc_detect_object_stair"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="계단"
-                style="@style/setting_item_size25_colorWhite_margin10dp"/>
-
-
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/sc_detect_object_human"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="사람"
-                style="@style/setting_item_size25_colorWhite_margin10dp"/>
 
             <View
                 android:layout_marginTop="20dp"
